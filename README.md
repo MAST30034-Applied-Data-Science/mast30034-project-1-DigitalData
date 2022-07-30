@@ -1,8 +1,8 @@
-# MAST30034 Project 1 README.md
+# MAST30034 Project 1 `README.md`
 - Name: Xavier Travers
 - Student ID: 1178369
 
-## Student Instructions
+<!-- ## Student Instructions
 You **must** write up `README.md` for this repository to be eligable for readability marks.
 
 1. Students must keep all Jupyter Notebooks in the `notebooks` directory.
@@ -19,7 +19,7 @@ You **must** write up `README.md` for this repository to be eligable for readabi
 Remember, we will be reading through and running your code, so it is in _your best interest_ to ensure it is readable and efficient.
 
 ## README example
-This is an example `README.md` for students to use. **Please change this to your requirements**.
+This is an example `README.md` for students to use. **Please change this to your requirements**. -->
 
 ## Research Goal 
 To determine the effect that the COVID pandemic has had on the frequency of use of taxi services in New York.
