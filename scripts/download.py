@@ -19,6 +19,7 @@ if not os.path.exists(out_dir_rel):
 # list of urls to dl datasets from
 dl_dict = { # the easy ones
     'tlc_zones/zones.csv': 'https://data.cityofnewyork.us/api/views/755u-8jsi/rows.csv?accessType=DOWNLOAD',
+    'tlc_zones/boroughs.geojson': 'https://data.cityofnewyork.us/api/geospatial/tqmj-j8zm?method=export&format=GeoJSON',
     'covid/cases-by-day.csv': 'https://raw.githubusercontent.com/nychealth/coronavirus-data/master/trends/data-by-day.csv'
 }
 

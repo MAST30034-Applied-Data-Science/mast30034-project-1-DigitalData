@@ -22,7 +22,7 @@ Remember, we will be reading through and running your code, so it is in _your be
 This is an example `README.md` for students to use. **Please change this to your requirements**. -->
 
 ## Research Goal 
-To determine the effect that the COVID pandemic has had on the frequency of use of taxi services in New York.
+To determine the effects that the COVID pandemic has had on the use of taxi services in New York.
 
 ## Timeline 
 The timeline for the research area is starting July 2019 and ending June 2021.
@@ -41,6 +41,8 @@ python3 ./scripts/download.py
 4. `preprocessing_part_3_aggregation.ipynb`: Groups the datasets by month, year, taxi type, shared-ride status (which is a passenger count for green/yellow taxis and a boolean value for high frequency taxi services).
 5. ``
 6. ``
+
+- `raw_data_analysis.ipynb`: A sanbox notebook (not necessary in the pipeline). Contains surface level analysis (data types, length, potential missing values) of the raw data where necessary. The results from this are used to introduce datasets.
 
 ## Technology Stack
 - [Apache Spark](https://pypi.org/project/pyspark/)
