@@ -27,9 +27,9 @@ dl_dict = { # the easy ones
 URL_TLC_TEMPLATE = 'https://d37ci6vzurychx.cloudfront.net/trip-data/'
 TLC_NAMES = ['yellow', 'green', 'fhvhv']
 TLC_DATES = { # the necessary dates for analysis
-    2019: range(6,13),
+    2019: range(7,13),
     2020: range(1,13),
-    2021: range(1,7),
+    2021: range(1,13),
 }
 
 # iterate through tlc types to download
@@ -54,6 +54,13 @@ start_dl = 0
 
 # count number of downloaded files
 num_downloaded = 0
+
+print('''
+DOWNLOADS STARTING...
+- Files that have already been downloaded will be skipped.
+- You might like to go do something else while this runs. This is a slow process (~5-10 mins).
+- If you interrupt this script mid-download, I recommend deleting the last parquet file it said it was downloading.
+''')
 
 # perform download the files according to the dict
 for filename, url in dl_dict.items():

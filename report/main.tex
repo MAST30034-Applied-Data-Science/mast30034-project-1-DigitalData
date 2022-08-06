@@ -21,14 +21,15 @@
 
 % Begin document creation
 % DELETE THE \lipsum PLACEHOLDERS WHEN YOU BEGIN
-\title{\textbf{Insert Title} \\ Insert Subtitle}
+\title{\textbf{COVID-19 Versus Taxi Services As Measured By Reliance} \\ 
+MAST30034 Assignment 1}
 \author{
 Xavier Travers \\
 Student ID: 1178369 \\
 %% Replace the link with your github repo
 % 1. Remember to escape underscore in the link.
 % 2. Remember to include the commit you want to submit in the link
-\href{https://github.com/MAST30034-Applied-Data-Science/mast30034\_p1\_template/tree/fd9f1dd17fdbcb5b119b70c93a22da8210d44fd7}{Github repo with commit}
+TODO: \href{https://github.com/MAST30034-Applied-Data-Science/mast30034\_p1\_template/tree/fd9f1dd17fdbcb5b119b70c93a22da8210d44fd7}{Github Repository}
 }
 
 \begin{document}
@@ -37,8 +38,22 @@ Student ID: 1178369 \\
 \section{Introduction}
 % Link to a 30 min tutorial if you require revision: https://www.overleaf.com/learn/latex/Learn_LaTeX_in_30_minutes
 
-Throughout this research project, I will be investigating the impact that the COVID-19 pandemic has had on the use of paid transport services.
+\textbf{What datasets are being used?}
 
+TLC dataset \cite{tlcdataset}
+COVID-19 dataset
+
+\textbf{What is the timeline?}
+
+The timeline of data considered starts in July 2019 and ends December 2021.
+This allows for comparisons at different stages of the pandemic (including a 6 month period before it happened).
+It is also more difficult to analyse the trip records of high-frequency taxi services such as Uber or Lyft,
+for which a dedicated dataset was started in February 2019.
+
+
+Throughout this research project, 
+I will be investigating the impact that the COVID-19 pandemic has had on two primary aspects of the use of different taxi services:
+usage frequency, and trip distance. Specifically, I will be modelling relationships between case, hospitalization, and death rates measured in New York City over the span of the timeline.
 
 % \LaTeX{} Have many caveats, you should search stack overflow for latex tips whenever you feel something looks bad, for instance:
 % When `` quoting '', should be used instead of ". For example, ``test'' vs "test".
@@ -53,48 +68,55 @@ Throughout this research project, I will be investigating the impact that the CO
 % \lipsum[7]
 
 % You can have \section{}, \subsection{}, and \subsubsection{}
-\section{Preprocessing, Analysis, and Geospatial Visualisation}
-\begin{enumerate} 
-    \item Example for enumerated points
-    % use \item to create more points
-\end{enumerate}
+\section{Method}
 
-\begin{itemize} 
-    \item Example for dot points
-    \item[*] You can change dot points to any symbols by putting [SYMBOL].
-    \item[$\times$] Here's a fun example.
-\end{itemize} 
-\lipsum[4-5]
-Example code for figures:
-% the [h] ensures your figure is inline at the location and not displayed on some other page
-\begin{figure}[h]
-    % change the scale multiplier to make the figures smaller or larger
-    \includegraphics[width=0.35\textwidth]{example-image-a}
-    % this ensures your figures are centered where possible
-    \centering
-    \caption{Some caption} % refer to this image as (Figure 1)
-\end{figure}
-\lipsum[1-2]
+\subsection{Preprocessing}
 
-\section{Modelling}
-Example of a maths equation:
-\begin{equation}
-    Y = X\beta + \epsilon
-\end{equation}
+\subsection{Analysis and Modelling}
 
-Example of an aligned equation (\& denotes the symbol to align):
-\begin{align*}
-    E[\mathbf{y}] &= X\beta + E[0] \\
-                  &= X\beta
-\end{align*}
 
-Example of an in-line equation $\epsilon \sim N(0, 1)$ \\
+% \begin{enumerate} 
+%     \item Example for enumerated points
+%     % use \item to create more points
+% \end{enumerate}
+
+% \begin{itemize} 
+%     \item Example for dot points
+%     \item[*] You can change dot points to any symbols by putting [SYMBOL].
+%     \item[$\times$] Here's a fun example.
+% \end{itemize} 
+% \lipsum[4-5]
+% Example code for figures:
+% % the [h] ensures your figure is inline at the location and not displayed on some other page
+% \begin{figure}[h]
+%     % change the scale multiplier to make the figures smaller or larger
+%     \includegraphics[width=0.35\textwidth]{example-image-a}
+%     % this ensures your figures are centered where possible
+%     \centering
+%     \caption{Some caption} % refer to this image as (Figure 1)
+% \end{figure}
+% \lipsum[1-2]
+
+% Example of a maths equation:
+% \begin{equation}
+%     Y = X\beta + \epsilon
+% \end{equation}
+
+% Example of an aligned equation (\& denotes the symbol to align):
+% \begin{align*}
+%     E[\mathbf{y}] &= X\beta + E[0] \\
+%                   &= X\beta
+% \end{align*}
+
+% Example of an in-line equation $\epsilon \sim N(0, 1)$ \\
+
+\subsection{Geospatial Visualisation}
 
 \section{Recommendations}
-\lipsum[10]
+% \lipsum[10]
 
-\section{Conclusion}
-\lipsum[14-15]
+\section{Conclusions}
+% \lipsum[14-15]
 
 
 \clearpage

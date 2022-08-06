@@ -25,7 +25,7 @@ This is an example `README.md` for students to use. **Please change this to your
 To determine the effects that the COVID pandemic has had on the frequency and distance of trips among different taxi services in New York.
 
 ## Timeline 
-The timeline for the research area is starting July 2019 and ending June 2021 (See [the report](https://github.com/MAST30034-Applied-Data-Science/mast30034-project-1-DigitalData/blob/main/report/main.pdf) for justification).
+The timeline for the research area is starting July 2019 and ending December 2021 (See [the report](https://github.com/MAST30034-Applied-Data-Science/mast30034-project-1-DigitalData/blob/main/report/main.pdf) for justification).
 
 ## Pipeline
 *Run all the scripts from the repository's root directory (do not `cd` into the `scripts` folder).*
