@@ -18,22 +18,26 @@ def group_plot(df:pd.DataFrame, x:str, y:str, grouping:str = 'type', kind:str = 
         logy (bool, optional): Apply log scale to x-axis. Defaults to False.
     """
 
-    # list of colours I'd like to use
+    # list of colours/markers I'd like to use
     # there should never be more than some 6 groups anyways (for legibility)
     all_colours = ['red', 'green', 'blue', 'purple', 'orange', 'yellow', 'brown']
+    all_markers = ['.', 'x', '+', '1', '*', 'p', 's']
     colours = {}
-    colour_index = 0
+    markers = {}
+    modifier_index = 0
     
     # fill the colour map
     for group in set(df[grouping]):
-        colours[group] = all_colours[colour_index]
-        colour_index += 1
+        colours[group] = all_colours[modifier_index]
+        markers[group] = all_markers[modifier_index]
+        modifier_index += 1
 
     # iterate over the groups and plot their values
     fig, ax = plt.subplots()
     grouped_df = df.groupby(grouping)
     for key, group in grouped_df:
-        group.plot(ax=ax, kind='scatter', x=x, y=y, label=key, color=colours[key], 
+        group.plot(ax=ax, kind='scatter', x=x, y=y, label=key, 
+        color=colours[key], marker=markers[key],
         logx=logx, logy=logy)
 
     # move legend out of bounds

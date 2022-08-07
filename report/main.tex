@@ -21,7 +21,7 @@
 
 % Begin document creation
 % DELETE THE \lipsum PLACEHOLDERS WHEN YOU BEGIN
-\title{\textbf{COVID-19 Versus Taxi Services As Measured By Reliance} \\ 
+\title{\textbf{Does Viral Infection Affect Taxi Service Reliance?} \\ 
 MAST30034 Assignment 1}
 \author{
 Xavier Travers \\
@@ -38,12 +38,30 @@ TODO: \href{https://github.com/MAST30034-Applied-Data-Science/mast30034\_p1\_tem
 \section{Introduction}
 % Link to a 30 min tutorial if you require revision: https://www.overleaf.com/learn/latex/Learn_LaTeX_in_30_minutes
 
-\textbf{What datasets are being used?}
+Viral infection has been on everyone's mind in the past few years due to the COVID-19 pandemic.
+With lockdowns and the fear of the spread of infection, 
+it is a natural assumption that many people-facing industries such as hospitality or ride-hailing have suffered in demand/reliance.
+This report aims to contribute to a body of works attempting to quantify the effect that the COVID-19 pandemic has had on the reliance on ride-hail/taxi services,
+and compare any derived trends to those based on another major viral infection: Influenza.
 
+Throughout this research project, 
+I will be investigating the impact that the COVID-19 pandemic has had on two measures of reliance on taxi services:
+usage frequency, and trip distance. 
+First, the relationships between reliance statistics and COVID-19 case, hospitalization, and death rates measured in New York City are modelled and analysed.
+Next, a comparison is made to any trends that appear between the selected taxi reliance statistics and Influenza case rates.
+Finally, a regression model will be constructed using both COVID-19 and Influenza case rates to predict thing taxi trip counts.
+
+\textbf{TODO: What datasets are used?}
+
+\begin{itemize}
+    \item The New York City Taxi and Limousine Commission (TLC) has provided a dataset of taxi service trips which captures information such as travel distance and general pickup/dropoff locations \cite{tlcdataset}. 
+Throughout this report, this is referred to as the TLC dataset. 
+    \item 
+\end{itemize}
 TLC dataset \cite{tlcdataset}
 COVID-19 dataset
 
-\textbf{What is the timeline?}
+\textbf{TODO: What is the timeline?}
 
 The timeline of data considered starts in July 2019 and ends December 2021.
 This allows for comparisons at different stages of the pandemic (including a 6 month period before it happened).

@@ -20,14 +20,16 @@ if not os.path.exists(out_dir_rel):
 dl_dict = { # the easy ones
     'tlc_zones/zones.csv': 'https://data.cityofnewyork.us/api/views/755u-8jsi/rows.csv?accessType=DOWNLOAD',
     'tlc_zones/boroughs.geojson': 'https://data.cityofnewyork.us/api/geospatial/tqmj-j8zm?method=export&format=GeoJSON',
-    'covid/cases-by-day.csv': 'https://raw.githubusercontent.com/nychealth/coronavirus-data/master/trends/data-by-day.csv'
+    'virals/covid/cases-by-day.csv': 'https://raw.githubusercontent.com/nychealth/coronavirus-data/master/trends/data-by-day.csv',
+    'virals/flu/cases-by-week.csv': 'https://health.data.ny.gov/api/views/jr8b-6gh6/rows.csv?accessType=DOWNLOAD',
 }
 
 # add the tlc data over the 6 months nov-2019 -> apr-2020 (when COVID hits)
 URL_TLC_TEMPLATE = 'https://d37ci6vzurychx.cloudfront.net/trip-data/'
-TLC_NAMES = ['yellow', 'green', 'fhvhv']
+TLC_NAMES = ['yellow'] # ,'fhvhv'] # this was taking too long
 TLC_DATES = { # the necessary dates for analysis
-    2019: range(7,13),
+    2018: range(1,13),
+    2019: range(1,13),
     2020: range(1,13),
     2021: range(1,13),
 }

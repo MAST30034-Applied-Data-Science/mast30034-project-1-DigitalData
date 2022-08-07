@@ -22,28 +22,30 @@ Remember, we will be reading through and running your code, so it is in _your be
 This is an example `README.md` for students to use. **Please change this to your requirements**. -->
 
 ## Research Goal 
-To determine the effects that the COVID pandemic has had on the frequency and distance of trips among different taxi services in New York.
+To determine the effects that the virus case rates (COVID-19 and Influenza) have on the frequency and distance of trips among different taxi services in New York.
 
-## Timeline 
+## TODO: Timeline
 The timeline for the research area is starting July 2019 and ending December 2021 (See [the report](https://github.com/MAST30034-Applied-Data-Science/mast30034-project-1-DigitalData/blob/main/report/main.pdf) for justification).
 
 ## Pipeline
-*Run all the scripts from the repository's root directory (do not `cd` into the `scripts` folder).*
+*Run all the scripts from the repository's root directory (__do not__ `cd` into the `scripts` folder).*
 
 1. `download.py`: Downloads the raw data into the `data/raw` directory. Run with
 
 ```
 python3 ./scripts/download.py
 ```
+2. `generate_mmwr_weeks.py`: Generates a `data/raw/mmwr_weeks.parquet` which is used for aggregation by week (where the Influenza data is already grouped by CDC/MMWR week). Run with
 
-2. `preprocessing_part_1_conversion.ipynb`: Converts any `.csv` datasets into the `.parquet` format.
+```
+python3 ./scripts/generate_mmwr_weeks.py
+```
 3. `preprocessing_part_2_cleaning.ipynb`: Cleans the dataset (removes rows containing `null` and negative values where necessary).
 4. `preprocessing_part_3_aggregation.ipynb`: Groups the datasets by month, year, taxi type, shared-ride status (which is a passenger count for green/yellow taxis and a boolean value for high frequency taxi services).
-5. The data analysis notebooks: These can be explored in any order (since they do not change data, only generating plots).
+5. The data analysis notebooks: These can be explored in any order (since they do not change data, only generating plots). TODO: This
     - `data_analysis_tlc.ipynb`: Performs analysis on the TLC dataset (distributions of selected columns, for example) with different groupings/filters.
     - `data_analysis_covid.ipynb`: Performs analysis on the COVID dataset (distributions of selected columns, for example) with different groupings/filters.
     - TODO: `data_analysis_yellow_vs_covid.ipynb`:
-    - TODO: `data_analysis_green_vs_covid.ipynb`:
     - TODO: `data_analysis_fhvhv_vs_covid.ipynb`:
 
 - `raw_data_analysis.ipynb`: A sanbox notebook (not necessary in the pipeline). Contains surface level analysis (data types, length, potential missing values) of the raw data where necessary. The results from this are used to introduce datasets. TODO: Consider removing this, I guess.
