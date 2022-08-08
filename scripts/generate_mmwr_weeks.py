@@ -32,7 +32,7 @@ def not_in_right_year(w, y):
     return False
 
 cdc_weeks = []
-start_year = 2017
+start_year = 2018
 end_year = 2022
 cal = cd.Calendar(6)
 week_index = 0
@@ -64,3 +64,5 @@ for year in range(start_year, end_year + 1):
 df = pd.DataFrame(cdc_weeks)
 print('SAVING "./data/raw/virals/mmwr_weeks.parquet"')
 df.to_parquet('./data/raw/virals/mmwr_weeks.parquet')
+print('SAVING "./data/curated/virals/mmwr_weeks.parquet"')
+df.to_parquet('./data/curated/virals/mmwr_weeks.parquet')

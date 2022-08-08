@@ -45,6 +45,7 @@ def strictly_positive(colname: str) -> Column:
     return F.col(colname) > 0
 
 def extract_cdc_week(df: DataFrame, mmwr_weeks_df: DataFrame) -> DataFrame:
+    # TODO: commenting
     colnames = df.columns
     return df.join(
         mmwr_weeks_df,
