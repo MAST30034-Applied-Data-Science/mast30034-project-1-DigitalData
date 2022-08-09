@@ -21,7 +21,7 @@
 
 % Begin document creation
 % DELETE THE \lipsum PLACEHOLDERS WHEN YOU BEGIN
-\title{\textbf{Does Viral Infection Affect Taxi Service Reliance?} \\ 
+\title{\textbf{How Does Viral Infection Affect Taxi Service Reliance?} \\ 
 MAST30034 Assignment 1}
 \author{
 Xavier Travers \\
@@ -39,39 +39,42 @@ TODO: \href{https://github.com/MAST30034-Applied-Data-Science/mast30034\_p1\_tem
 % Link to a 30 min tutorial if you require revision: https://www.overleaf.com/learn/latex/Learn_LaTeX_in_30_minutes
 
 Viral infection has been on everyone's mind in the past few years due to the COVID-19 pandemic.
-With lockdowns and the fear of the spread of infection, 
-it is a natural assumption that many people-facing industries such as hospitality or ride-hailing have suffered in demand/reliance.
-This report aims to contribute to a body of works attempting to quantify the effect that the COVID-19 pandemic has had on the reliance on ride-hail/taxi services,
-and compare any derived trends to those based on another major viral infection: Influenza.
+With lockdowns and fears of infection, 
+it is a natural assumption that many people-facing industries such as ride-hailing have suffered in demand.
+To what extent is such an assumption true?
+This report aims to contribute to a body of works attempting to quantify the effect that larger-scale viral diseases can have on different industries.
+Specifically investigated will be the effects that influenza/COVID-19 case rates have on taxi trip rates and passenger counts.
 
-Throughout this research project, 
-I will be investigating the impact that the COVID-19 pandemic has had on two measures of reliance on taxi services:
-usage frequency, and trip distance. 
-First, the relationships between reliance statistics and COVID-19 case, hospitalization, and death rates measured in New York City are modelled and analysed.
-Next, a comparison is made to any trends that appear between the selected taxi reliance statistics and Influenza case rates.
-Finally, a regression model will be constructed using both COVID-19 and Influenza case rates to predict thing taxi trip counts.
+This report will detail the statistical analysis involved in revealing the extent to which changes in case rates of a viral infection may affect taxi trip rates and passenger counts.
 
-\textbf{TODO: What datasets are used?}
-
+\subsection{Datasets}
 \begin{itemize}
-    \item The New York City Taxi and Limousine Commission (TLC) has provided a dataset of taxi service trips which captures information such as travel distance and general pickup/dropoff locations \cite{tlcdataset}. 
+    \item The New York City Taxi and Limousine Commission (TLC) provides a dataset of taxi service trips which captures information such as type of taxi, travel distance, general pickup/dropoff locations and driver-input passenger counts \cite{tlcdataset}. 
 Throughout this report, this is referred to as the TLC dataset. 
-    \item 
+In this report, the focus is placed on the dataset concerning New York's Yellow hail taxis. 
+High frequency hired vehicle service (e.g. Uber) data is not included in analysis, 
+since the dataset is too recent for the purposes of this report (starting only in early 2019).
+Each entry in this dataset contains several values, but this report only focuses on trip distance, passenger count, date of pickup, and the pickup/dropoff locations.
+    \item Influenza case rates are recorded on a weekly basis by the New York Department of Health \cite{fludataset}. 
+Case rates in this dataset are dated based on Morbidity and Mortality Weekly Report (MMWR) weeks, which are generated using rules defined by the CDC \cite{mmwr}.
+Each entry in this dataset contains an MMWR week, county (within the state of New York), type of Influenza (A, B or unspecified), and case count.
+The dataset provides coverage over the whole selected timeline of data.
+    \item COVID-19 case rates have been recorded daily by the New York Department of Health and Mental Hygiene \cite{coviddataset}.
+This dataset begins on the last day of february, when the first official cases of COVID-19 were recorded in New York City. 
+Each entry in this data set contains a date and several of the daily COVID-19 rates by borough (e.g. count of hospitalizations on the day in the Bronx).
+Of specific interest is the daily case count per borough.
 \end{itemize}
-TLC dataset \cite{tlcdataset}
-COVID-19 dataset
 
-\textbf{TODO: What is the timeline?}
+\subsection{Timeline}
+The overall timeline considered for the data spans from the start of 2018 to the end of 2021.
+This can be split into two shorter timelines of equal length: before COVID-19, and after COVID-19.
+Data from 2022 is not included, since the COVID-19 dataset is automated and has an increased likelihood of containing false information with newer data.
+Data from before 2018 is not included for the sake of symmetry and to reduce code runtime.
 
-The timeline of data considered starts in July 2019 and ends December 2021.
-This allows for comparisons at different stages of the pandemic (including a 6 month period before it happened).
-It is also more difficult to analyse the trip records of high-frequency taxi services such as Uber or Lyft,
-for which a dedicated dataset was started in February 2019.
-
-
-Throughout this research project, 
-I will be investigating the impact that the COVID-19 pandemic has had on two primary aspects of the use of different taxi services:
-usage frequency, and trip distance. Specifically, I will be modelling relationships between case, hospitalization, and death rates measured in New York City over the span of the timeline.
+% The timeline of data considered starts in July 2019 and ends December 2021.
+% This allows for comparisons at different stages of the pandemic (including a 6 month period before it happened).
+% It is also more difficult to analyse the trip records of high-frequency taxi services such as Uber or Lyft,
+% for which a dedicated dataset was started in February 2019.
 
 % \LaTeX{} Have many caveats, you should search stack overflow for latex tips whenever you feel something looks bad, for instance:
 % When `` quoting '', should be used instead of ". For example, ``test'' vs "test".
@@ -89,6 +92,12 @@ usage frequency, and trip distance. Specifically, I will be modelling relationsh
 \section{Method}
 
 \subsection{Preprocessing}
+
+\subsubsection{Cleaning}
+
+
+
+
 
 \subsection{Analysis and Modelling}
 

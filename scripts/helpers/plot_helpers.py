@@ -1,8 +1,9 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-def group_plot(df:pd.DataFrame, x:str, y:str, grouping:str = 'type', kind:str = 'scatter',
-    filename_prefix:str = '', xlabel:str = '', ylabel:str = '', logx:bool = False, logy:bool = False):
+def group_plot(df:pd.DataFrame, x:str, y:str, grouping:str = 'week_index', 
+    kind:str = 'scatter', filename_prefix:str = '', xlabel:str = '', 
+    ylabel:str = '', logx:bool = False, logy:bool = False):
     """Generate and save a plot using panda's groupby feature.
 
     Args:
@@ -36,7 +37,7 @@ def group_plot(df:pd.DataFrame, x:str, y:str, grouping:str = 'type', kind:str = 
     fig, ax = plt.subplots()
     grouped_df = df.groupby(grouping)
     for key, group in grouped_df:
-        group.plot(ax=ax, kind='scatter', x=x, y=y, label=key, 
+        group.plot(ax=ax, kind=kind, x=x, y=y, label=key, 
         color=colours[key], marker=markers[key],
         logx=logx, logy=logy)
 
@@ -55,5 +56,6 @@ def group_plot(df:pd.DataFrame, x:str, y:str, grouping:str = 'type', kind:str = 
         ax.set_ylabel(f'{ax.get_ylabel()} (log scale)')
     
     # show and save the plot
-    plt.savefig(f'../plots/scatter-{filename_prefix}-{ax.get_ylabel()}-vs-{ax.get_xlabel()}-by-{grouping}.png')
+    plt.savefig(f'../plots/scatter-{filename_prefix}-{ax.get_ylabel()}-vs-{ax.get_xlabel()}-by-{grouping}.png',
+        dpi=300)
     plt.show()
