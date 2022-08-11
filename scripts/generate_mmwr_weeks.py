@@ -4,6 +4,7 @@ Xavier Travers
 1178369
 '''
 from itertools import zip_longest
+import os
 import pandas as pd
 import calendar as cd
 
@@ -62,7 +63,16 @@ for year in range(start_year, end_year + 1):
                 cdc_weeks.append(new_row)
     
 df = pd.DataFrame(cdc_weeks)
-print('SAVING "./data/raw/virals/mmwr_weeks.parquet"')
-df.to_parquet('./data/raw/virals/mmwr_weeks.parquet')
-print('SAVING "./data/curated/virals/mmwr_weeks.parquet"')
-df.to_parquet('./data/curated/virals/mmwr_weeks.parquet')
+
+# define the path
+def mmwr_path(folder):
+    return f'./data/{folder}/virals/'
+
+for folder in ['raw', 'curated']:
+
+    # create the needed dir for this dl file if necessary
+    if not os.path.exists(os.path.dirname(mmwr_path(folder))):
+        os.makedirs(os.path.dirname(mmwr_path(folder)))
+
+    print(f'SAVING "{mmwr_path(folder)}mmwr_weeks.parquet"')
+    df.to_parquet(f'{mmwr_path(folder)}mmwr_weeks.parquet')

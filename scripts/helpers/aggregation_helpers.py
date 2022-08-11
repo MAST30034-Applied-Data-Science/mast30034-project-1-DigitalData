@@ -2,6 +2,7 @@
 from pyspark.sql import DataFrame, Column
 from pyspark.sql.types import IntegerType, TimestampType
 from pyspark.sql import functions as F
+import geopandas as gp
 
 
 AGGREGATION_FUNCTIONS = {
@@ -32,7 +33,7 @@ def group_and_aggregate(df: DataFrame, group_cols: "list[str]", agg_cols: dict) 
 
     print('test')
 
-def extract_borough_name(df: DataFrame, zones_df:DataFrame, 
+def extract_borough_name(df: DataFrame, zones_df:DataFrame,
         id_column: str, prefix: str) -> DataFrame:
     # TODO: commenting
     colnames = df.columns
