@@ -93,11 +93,31 @@ Data from before 2018 is not included for the sake of symmetry and to reduce cod
 
 \subsection{Preprocessing}
 
+
 \subsubsection{Cleaning}
 
+\textbf{TLC Dataset}
+\begin{enumerate}
+    \item test
+\end{enumerate}
 
+\subsubsection{Necessary Extracted Features}
+The flu dataset contains detail only on a weekly basis, 
+while the other datasets used contain daily data. 
+This means that the data needs to be aggregated by MMWR week value,
+which allows the construction of linear models on weekly data.
+While the granularity of the data suffers, 
+the large timeline ensures that at least 52 points of data are available for analysis per time period.
+Also necessary for connecting viral infection case rate datasets to the taxi datasets are the extraction of borough.
 
+\subsubsection{Aggregation}
 
+All data is aggregated by MMWR week.
+The datasets are then all joined on the MMWR week, and corresponding boroughs.
+Importantly, for each MMWR week, two sets of case rates are recorded: 
+those corresponding to the pickup borough, and those corresponding to the dropoff borough.
+For each MMWR week aggregate, total case rates are recorded, 
+as well as total average trip distances and average passenger counts.
 
 \subsection{Analysis and Modelling}
 

@@ -48,7 +48,7 @@ python3 ./scripts/generate_mmwr_weeks.py
     - TODO: `data_analysis_yellow_vs_covid.ipynb`:
     - TODO: `data_analysis_fhvhv_vs_covid.ipynb`:
 
-- `raw_data_analysis.ipynb`: A sanbox notebook (not necessary in the pipeline). Contains surface level analysis (data types, length, potential missing values) of the raw data where necessary. The results from this are used to introduce datasets. TODO: Consider removing this, I guess.
+- `raw_data_analysis.ipynb`: A sandbox notebook (not necessary in the pipeline). Contains surface level analysis (data types, length, potential missing values, outliers) of the raw data where necessary. The results from this are used throughout the report.
 
 ## TODO: Technology Stack
 - [Apache Spark](https://pypi.org/project/pyspark/)

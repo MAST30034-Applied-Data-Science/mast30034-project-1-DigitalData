@@ -29,10 +29,10 @@ dl_dict = { # the easy ones
 URL_TLC_TEMPLATE = 'https://d37ci6vzurychx.cloudfront.net/trip-data/'
 TLC_NAMES = ['yellow'] # ,'fhvhv'] # this was taking too long
 TLC_DATES = { # the necessary dates for analysis
-    2018: range(1,13),
+    # 2018: range(1,13),
     2019: range(1,13),
-    2020: range(1,13),
-    2021: range(1,13),
+    2020: range(3,13),
+    2021: range(1,3),
 }
 
 # iterate through tlc types to download

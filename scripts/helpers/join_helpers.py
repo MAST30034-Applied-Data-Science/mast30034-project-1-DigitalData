@@ -1,6 +1,7 @@
-from pyspark.sql import DataFrame, Column
+from pyspark.sql import DataFrame, Column, SparkSession
 from pyspark.sql.types import IntegerType
 from pyspark.sql import functions as F
+import os
 
 def join_by_week_by_borough(tlc_df: DataFrame, viral_df: DataFrame, 
         case_col: str) -> DataFrame:
@@ -29,3 +30,21 @@ def join_by_week_by_borough(tlc_df: DataFrame, viral_df: DataFrame,
     )
 
     return out_df
+
+def read_stacked_tlc_df(spark:SparkSession, 
+        location:str = '../data/raw/tlc/yellow') -> DataFrame:
+
+    stacked_df = None
+
+    # iterate through the downloaded files per taxi type
+    for filename in os.listdir(location):
+
+        # read the parquet in
+        tlc_df = spark.read.parquet(f'{location}/{filename}')
+
+        if stacked_df == None:
+            stacked_df = tlc_df
+        else:
+            stacked_df = stacked_df.union(tlc_df)
+
+    return stacked_df

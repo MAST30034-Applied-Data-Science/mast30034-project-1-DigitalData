@@ -95,3 +95,23 @@ def replace_column_using_dict(df:DataFrame, colname: str, mappings: dict) -> Dat
     # from: https://stackoverflow.com/questions/42980704/pyspark-create-new-column-with-mapping-from-a-dict
     map_expr = F.create_map([F.lit(x) for x in chain(*mappings.items())])
     return df.withColumn(colname, map_expr[F.col(colname)])
+
+
+def extract_borough_name(df: DataFrame, zones_df:DataFrame, prefix: str) -> DataFrame:
+    # TODO: commenting
+    colnames = df.columns
+    return df.join(
+        zones_df.select(
+            F.col('LocationID').alias(f'{prefix}_location_id'), 
+            F.col('borough').alias(f'{prefix}_borough')
+        ),
+        on = f'{prefix}_location_id',
+        how = 'inner'
+    ).select(colnames + [f'{prefix}_borough'])\
+        .where(F.col(f'{prefix}_borough').isin([
+            'Manhattan',
+            'Brooklyn',
+            'Bronx',
+            'Staten Island',
+            'Queens'
+        ]))

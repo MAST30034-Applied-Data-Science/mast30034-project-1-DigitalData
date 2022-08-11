@@ -30,18 +30,3 @@ def group_and_aggregate(df: DataFrame, group_cols: "list[str]", agg_cols: dict) 
     #     for col, func_types in agg_cols.items()
     #     for func_type in func_types
     # )
-
-    print('test')
-
-def extract_borough_name(df: DataFrame, zones_df:DataFrame,
-        id_column: str, prefix: str) -> DataFrame:
-    # TODO: commenting
-    colnames = df.columns
-    return df.join(
-        zones_df.select(
-            F.col('LocationID').alias(f'{prefix}_location_id'), 
-            F.col('borough').alias(f'{prefix}_borough')
-        ),
-        on = f'{prefix}_location_id',
-        how = 'inner'
-    ).select(colnames + [f'{prefix}_borough'])
