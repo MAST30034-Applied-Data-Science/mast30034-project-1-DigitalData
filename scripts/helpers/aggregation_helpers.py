@@ -8,6 +8,7 @@ import geopandas as gp
 AGGREGATION_FUNCTIONS = {
     'total': ('tot_', F.sum),
     'average': ('avg_', F.avg),
+    'daily_average': ('daily_avg_', lambda colname: F.sum(colname) / 7),
     'count': ('num_', F.count)
 }
 # TODO: commenting
