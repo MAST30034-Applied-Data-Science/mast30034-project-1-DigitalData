@@ -51,7 +51,7 @@ def extract_cdc_week(df: DataFrame, mmwr_weeks_df: DataFrame) -> DataFrame:
         mmwr_weeks_df,
         on=['day', 'month', 'year'],
         how='inner'
-    ).select(['week_index', 'cdc_week'] + colnames)
+    ).select(['week_ending', 'week_year', 'week_month', 'timeline'] + colnames)
 
 def extract_date_columns(df: DataFrame, mmwr_weeks_df:DataFrame, date_col: str) -> DataFrame:
     # TODO: commending on extract_day_month_year
@@ -74,7 +74,10 @@ def extract_date_columns(df: DataFrame, mmwr_weeks_df:DataFrame, date_col: str) 
     df = extract_cdc_week(df, mmwr_weeks_df)
 
     return df\
-        .select(['year', 'month', 'day', 'week_index', 'cdc_week'] + colnames)
+        .select(
+            ['year', 'month', 'day', 'week_ending', 'week_year', 'week_month',
+                'timeline'] + colnames
+        )
 
 def perform_cleaning(df: DataFrame, mmwr_weeks_df: DataFrame,
     keep_cols: dict, cleaning_dict: dict) -> DataFrame:
@@ -108,10 +111,10 @@ def extract_borough_name(df: DataFrame, zones_df:DataFrame, prefix: str) -> Data
         on = f'{prefix}_location_id',
         how = 'inner'
     ).select(colnames + [f'{prefix}_borough'])\
-        .where(F.col(f'{prefix}_borough').isin([
-            'Manhattan',
-            'Brooklyn',
-            'Bronx',
-            'Staten Island',
-            'Queens'
-        ]))
+    .where(F.col(f'{prefix}_borough').isin([
+        'Manhattan',
+        'Brooklyn',
+        'Bronx',
+        'Staten Island',
+        'Queens'
+    ]))

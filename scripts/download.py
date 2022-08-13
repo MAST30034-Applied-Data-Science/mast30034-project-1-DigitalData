@@ -25,14 +25,22 @@ dl_dict = { # the easy ones
     'virals/flu/cases-by-week.csv': 'https://health.data.ny.gov/api/views/jr8b-6gh6/rows.csv?accessType=DOWNLOAD',
 }
 
-# add the tlc data over the 6 months nov-2019 -> apr-2020 (when COVID hits)
+# add the tlc data over the defined timeline(s)
 URL_TLC_TEMPLATE = 'https://d37ci6vzurychx.cloudfront.net/trip-data/'
 TLC_NAMES = ['yellow'] # ,'fhvhv'] # this was taking too long
 TLC_DATES = { # the necessary dates for analysis
-    # 2018: range(1,13),
+
+    # note: the timelines defined in this code have padding. 
+    # This is because the final data is grouped by mmwr weeks, 
+    # which do not necessarily align within month definitions.
+    # (also, inbetween times are used for time-series analysis)
+
+    # for pre-COVID timeline: 52 weeks Mar 2018 - Feb 2019
+    2018: range(2,13),
     2019: range(1,13),
-    2020: range(3,13),
-    2021: range(1,3),
+    # for pre-COVID timeline: 52 weeks Mar 2018 - Feb 2019
+    2020: range(1,13),
+    2021: range(1,4),
 }
 
 # iterate through tlc types to download

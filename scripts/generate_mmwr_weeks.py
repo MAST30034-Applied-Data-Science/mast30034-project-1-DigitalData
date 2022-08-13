@@ -5,6 +5,7 @@ Xavier Travers
 '''
 from itertools import zip_longest
 import os
+from statistics import mode
 import pandas as pd
 import calendar as cd
 
@@ -33,7 +34,7 @@ def not_in_right_year(w, y):
     return False
 
 cdc_weeks = []
-start_year = 2019
+start_year = 2018
 end_year = 2021
 cal = cd.Calendar(6)
 week_index = 0
@@ -51,6 +52,13 @@ for year in range(start_year, end_year + 1):
             last_week = list(week)
             cdc_index += 1
             week_index += 1
+            week_months = []
+            week_years = []
+
+            for date in week:
+                week_months.append(date.month)
+                week_years.append(date.year)
+
             for date in week:
                 new_row = {
                     'year': date.year,
@@ -58,11 +66,36 @@ for year in range(start_year, end_year + 1):
                     'day': date.day,
                     'cdc_week': cdc_index,
                     'week_index': week_index,
-                    'us_format': f'{str(date.month).zfill(2)}/{str(date.day).zfill(2)}/{date.year}'
+                    'us_format': f'{str(date.month).zfill(2)}/{str(date.day).zfill(2)}/{date.year}',
+                    'week_ending': f'{week[-1].year}-{str(week[-1].month).zfill(2)}-{str(week[-1].day).zfill(2)}',
+                    'week_month': mode(week_months),
+                    'week_year': mode(week_years)
                 }
                 cdc_weeks.append(new_row)
     
 df = pd.DataFrame(cdc_weeks)
+
+# define the two timelines of analysis ('pre' vs 'post')
+df['timeline'] = 'neither'
+
+def set_timeline(t_year: int, t_month: int, timeline: str):
+    for i in range(1, 13):
+        df.loc[
+            lambda sdf: (sdf['week_year'] == t_year) 
+                        & (sdf['week_month'] == t_month), 
+            ['timeline']
+        ] = timeline
+
+        t_month += 1
+        if t_month > 12:
+            t_year += 1
+            t_month = 1
+
+set_timeline(2018, 3, 'pre')
+set_timeline(2019, 3, 'keep for graphing')
+set_timeline(2020, 3, 'post')
+
+print(df.head(100))
 
 # define the path
 def mmwr_path(folder):
