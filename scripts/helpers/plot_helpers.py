@@ -5,7 +5,7 @@ import pandas as pd
 import geopandas as gpd
 import folium
 
-ALL_COLOURS = ['red', 'green', 'blue', 'cyan', 'yellow', 'magenta', 'orange', 'lime']
+ALL_COLOURS = ['red', 'green', 'blue', 'cyan', 'magenta', 'lime', 'orange', 'yellow']
 
 def time_series(df: pd.DataFrame, y: str, grouping: str, ylabel: str = '',
     logy:bool = False):
