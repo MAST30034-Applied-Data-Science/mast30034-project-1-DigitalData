@@ -1,9 +1,11 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
+import pandas as pd
+import geopandas as gpd
+import folium
 
-ALL_COLOURS = ['r', 'g', 'b', 'c', 'y', 'm', 'orange', 'lime']
-
+ALL_COLOURS = ['red', 'green', 'blue', 'cyan', 'yellow', 'magenta', 'orange', 'lime']
 
 def time_series(df: pd.DataFrame, y: str, grouping: str, ylabel: str = '',
     logy:bool = False):
@@ -54,8 +56,6 @@ def time_series(df: pd.DataFrame, y: str, grouping: str, ylabel: str = '',
         dpi=300
     )
     plt.show()
-
-
 
 def group_plot(df:pd.DataFrame, x:str, y:str, grouping:str = 'week_index', 
     kind:str = 'scatter', filename_prefix:str = '', xlabel:str = '', 
@@ -115,4 +115,66 @@ def group_plot(df:pd.DataFrame, x:str, y:str, grouping:str = 'week_index',
         dpi=300)
     plt.show()
 
+def geospatial_distances_when_max(tlc_df: pd.DataFrame, viral_df: pd.DataFrame, 
+        borough_gj: gpd.GeoDataFrame, max_col: str, virus_name: str) -> folium.Map:
+    #TODO: commenting geospatial_distances_when_max
+    _map = folium.Map(location=[40.66, -73.94], tiles="OpenStreetMap", zoom_start=10)
 
+    def miles_to_meters(miles: float)-> float:
+        # from google
+        METERS_IN_A_MILE = 1609.34
+        return miles * METERS_IN_A_MILE
+
+    df = tlc_df.merge(viral_df, 
+        left_on = ['pu_borough', 'week_ending'],
+        right_on = ['borough', 'week_ending'])
+
+    colour_index = 0
+    for borough, geom, coord in borough_gj[['boro_name', 'geometry', 'centroid']].values:
+
+        _map.add_child(folium.Choropleth(
+            geo_data=geom,
+            name=borough,
+            fill_color=ALL_COLOURS[colour_index],
+            fill_opacity=0.2,
+            legend_name=borough
+        ))
+
+        _map.add_child(folium.Marker(
+                location = coord,
+                icon = folium.DivIcon(
+                    html = f'''
+                    <h4 style=' color: black;
+                                right: 50%; top: 0%;
+                                position: absolute;
+                                transform: translate(50%,-50%);
+                                text-align: center;
+                                padding: 5px;
+                                border-radius: 10px;
+                                background-color: rgba(255, 255, 255, 0.65)'>
+                    <b>{borough}</b>
+                    </h4>
+                    '''
+                )
+            )
+        )
+        
+        borough_df = df[df['borough'] == borough]
+        borough_df = borough_df.loc[borough_df[max_col].idxmax()]
+
+        _map.add_child(folium.Circle(
+                location = coord,
+                # tooltip = borough,
+                radius = miles_to_meters(borough_df['avg_trip_distance']),
+                # fill_color=ph.ALL_COLOURS[colour_index],
+                # fill_opacity=1,
+                weight=2,
+                color=ALL_COLOURS[colour_index],
+            )
+        )
+
+
+        colour_index += 1
+
+    _map.save(f'../plots/avg-trip-distance-at-max-{virus_name}.html')
+    return _map

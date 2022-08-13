@@ -51,7 +51,8 @@ def extract_cdc_week(df: DataFrame, mmwr_weeks_df: DataFrame) -> DataFrame:
         mmwr_weeks_df,
         on=['day', 'month', 'year'],
         how='inner'
-    ).select(['week_ending', 'week_year', 'week_month', 'timeline'] + colnames)
+    ).select(['week_ending', 'week_year', 'week_month', 'week_index', 
+        'timeline'] + colnames)
 
 def extract_date_columns(df: DataFrame, mmwr_weeks_df:DataFrame, date_col: str) -> DataFrame:
     # TODO: commending on extract_day_month_year
@@ -76,7 +77,7 @@ def extract_date_columns(df: DataFrame, mmwr_weeks_df:DataFrame, date_col: str) 
     return df\
         .select(
             ['year', 'month', 'day', 'week_ending', 'week_year', 'week_month',
-                'timeline'] + colnames
+                'week_index', 'timeline'] + colnames
         )
 
 def perform_cleaning(df: DataFrame, mmwr_weeks_df: DataFrame,

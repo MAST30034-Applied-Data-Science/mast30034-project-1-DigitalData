@@ -101,7 +101,7 @@ print(df.head(100))
 def mmwr_path(folder):
     return f'./data/{folder}/virals/'
 
-for folder in ['raw', 'curated']:
+for folder in ['raw']:
 
     # create the needed dir for this dl file if necessary
     if not os.path.exists(os.path.dirname(mmwr_path(folder))):

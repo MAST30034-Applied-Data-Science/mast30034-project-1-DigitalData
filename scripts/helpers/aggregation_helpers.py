@@ -26,8 +26,3 @@ def group_and_aggregate(df: DataFrame, group_cols: "list[str]", agg_cols: dict) 
             )
 
     return grouped_df.agg(*column_aggregates)
-    # return grouped_df.agg(
-    #     AGGREGATION_FUNCTIONS[func_type](1)(colname).alias(AGGREGATION_FUNCTIONS[func_type](0))
-    #     for col, func_types in agg_cols.items()
-    #     for func_type in func_types
-    # )
