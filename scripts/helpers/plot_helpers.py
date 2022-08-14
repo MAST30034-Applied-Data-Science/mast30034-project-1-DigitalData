@@ -6,23 +6,31 @@ import geopandas as gpd
 import folium
 
 ALL_COLOURS = ['red', 'green', 'blue', 'orange', 'cyan', 'lime', 'magenta', 'yellow']
+BOROUGH_COLOURS = {
+    'Bronx': 'red',
+    'Brooklyn': 'cyan',
+    'Manhattan': 'green',
+    'Queens': 'orange',
+    'Staten Island': 'blue'
+}
 
-def time_series(df: pd.DataFrame, y: str, grouping: str, ylabel: str = '',
-    logy:bool = False):
+def time_series(df: pd.DataFrame, y: str, ylabel: str = '', logy:bool = False):
 
-    # determine colours by grouping
-    colours = {}
-    modifier_index = 0
-    for group in set(df[grouping]):
-        colours[group] = ALL_COLOURS[modifier_index]
-        modifier_index += 1
+    # check which borough column is included
+    borough_col = ''
+    if 'pu_borough' in df.columns:
+        borough_col = 'pu_borough'
+    elif 'do_borough' in df.columns:
+        borough_col = 'do_borough'
+    else:
+        borough_col = 'borough'
 
     # extract the dates
     df['week_ending_date'] = pd.to_datetime(df['week_ending'])
 
     # create the time-series by group
     fig, ax = plt.subplots()
-    grouped_df = df.sort_values('week_ending_date').groupby(grouping)
+    grouped_df = df.sort_values('week_ending_date').groupby(borough_col)
     for key, group in grouped_df:
 
         # apply dates formatting
@@ -31,7 +39,7 @@ def time_series(df: pd.DataFrame, y: str, grouping: str, ylabel: str = '',
         ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
 
         group.plot(ax=ax, x='week_ending_date', y=y, kind='line', label=key,
-            color=colours[key], logy=logy)
+            color=BOROUGH_COLOURS[key], logy=logy)
 
     # create a legend outside the plot
     ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
@@ -43,7 +51,7 @@ def time_series(df: pd.DataFrame, y: str, grouping: str, ylabel: str = '',
     else:
         ax.set_ylabel(y)
     if logy:
-        ax.set_ylabel(f'{ax.get_ylabel()} (log scale)')
+        ax.set_ylabel(f'{ax.get_ylabel()} (Log Scale)')
 
     # rotates and right aligns the x labels, and moves the bottom of the
     # axes up to make room for them
@@ -51,50 +59,39 @@ def time_series(df: pd.DataFrame, y: str, grouping: str, ylabel: str = '',
 
     # show and save the plot
     plt.savefig(
-        f'../plots/time-series-{ax.get_ylabel()}-vs-{ax.get_xlabel()}-by-{grouping}.png',
+        f'../plots/time-series-{ax.get_ylabel()}-vs-{ax.get_xlabel()}-by-{borough_col}.png',
         bbox_inches='tight',
         dpi=300
     )
     plt.show()
 
-def group_plot(df:pd.DataFrame, x:str, y:str, grouping:str = 'week_index', 
-    kind:str = 'scatter', filename_prefix:str = '', xlabel:str = '', 
-    ylabel:str = '', logx:bool = False, logy:bool = False):
-    """Generate and save a plot using panda's groupby feature.
+def scatter(df:pd.DataFrame, x:str, y:str, xlabel:str = '', ylabel:str = '', 
+        logx:bool = False, logy:bool = False):
 
-    Args:
-        df (`pd.DataFrame`): Dataset to plot.
-        x (str): Column name of x-axis.
-        y (str): Column name of y-axis.
-        grouping (str): Column name of different groups (which are coloured differently). Defaults to 'type'.
-        kind (str, optional): Type of plot [`scatter`, `parallel`, `bar`]. Defaults to 'scatter'.
-        filename_prefix (str, optional): Used when naming the plot image file. Defaults to ''.
-        xlabel (str, optional): Name of x-axis. If empty, then uses `x`.
-        ylabel (str, optional): Name of y-axis. If empty, then uses `y`.
-        logx (bool, optional): Apply log scale to x-axis. Defaults to False.
-        logy (bool, optional): Apply log scale to x-axis. Defaults to False.
-    """
+    # check which borough column is included
+    borough_col = ''
+    if 'pu_borough' in df.columns:
+        borough_col = 'pu_borough'
+    elif 'do_borough' in df.columns:
+        borough_col = 'do_borough'
+    else:
+        borough_col = 'borough'
 
-    # list of colours/markers I'd like to use
-    # there should never be more than some 6 groups anyways (for legibility)
-    all_markers = ['.', 'x', '+', '1', '*', 'p', 's']
+    # determine colours by grouping
+    # all_markers = ['.', 'x', '+', '1', '*', 'p', 's']
     colours = {}
-    markers = {}
     modifier_index = 0
-    
-    # fill the colour map
-    for group in set(df[grouping]):
+    for group in set(df[borough_col]):
         colours[group] = ALL_COLOURS[modifier_index]
-        markers[group] = all_markers[modifier_index]
+        # markers[group] = all_markers[modifier_index]
         modifier_index += 1
 
     # iterate over the groups and plot their values
     fig, ax = plt.subplots()
-    grouped_df = df.groupby(grouping)
+    grouped_df = df.groupby(borough_col)
     for key, group in grouped_df:
-        group.plot(ax=ax, kind=kind, x=x, y=y, label=key, 
-        color=colours[key], marker=markers[key],
-        logx=logx, logy=logy)
+        group.plot.scatter(ax=ax, x=x, y=y, label=key, color=BOROUGH_COLOURS[key],
+            logx=logx, logy=logy)
 
     # move legend out of bounds
     ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
@@ -103,15 +100,15 @@ def group_plot(df:pd.DataFrame, x:str, y:str, grouping:str = 'week_index',
     if len(xlabel) != 0: 
         ax.set_xlabel(xlabel)
     if logx:
-        ax.set_xlabel(f'{ax.get_xlabel()} (log scale)')
+        ax.set_xlabel(f'{ax.get_xlabel()} (Log Scale)')
 
     if len(ylabel) != 0: 
         ax.set_ylabel(ylabel)
     if logy:
-        ax.set_ylabel(f'{ax.get_ylabel()} (log scale)')
+        ax.set_ylabel(f'{ax.get_ylabel()} (Log Scale)')
     
     # show and save the plot
-    plt.savefig(f'../plots/scatter-{filename_prefix}-{ax.get_ylabel()}-vs-{ax.get_xlabel()}-by-{grouping}.png',
+    plt.savefig(f'../plots/scatter-{ax.get_ylabel()}-vs-{ax.get_xlabel()}-by-{borough_col}.png',
         dpi=300)
     plt.show()
 
@@ -125,12 +122,14 @@ def geospatial_distances_when_max(df: pd.DataFrame, borough_gj: gpd.GeoDataFrame
         METERS_IN_A_MILE = 1609.34
         return miles * METERS_IN_A_MILE
 
-    # check whether it's a pu or do df
+    # check which borough column is included
     borough_col = ''
     if 'pu_borough' in df.columns:
         borough_col = 'pu_borough'
-    else:
+    elif 'do_borough' in df.columns:
         borough_col = 'do_borough'
+    else:
+        borough_col = 'borough'
 
     max_cases_idx = df.groupby([borough_col])[max_col]\
         .transform(max) == df[max_col]
@@ -193,21 +192,32 @@ def geospatial_average_distance(df: pd.DataFrame, borough_gj: gpd.GeoDataFrame) 
         METERS_IN_A_MILE = 1609.34
         return miles * METERS_IN_A_MILE
 
-    # check whether it's a pu or do df
+    # check which borough column is included
     borough_col = ''
     if 'pu_borough' in df.columns:
         borough_col = 'pu_borough'
-    else:
+    elif 'do_borough' in df.columns:
         borough_col = 'do_borough'
+    else:
+        borough_col = 'borough'
 
-    _map.add_child(folium.Choropleth(
-        geo_data=borough_gj,
-        name='borough layers',
-        fill_opacity=0.75,
-        fill_color='#feb24c'
-    ))
+    # _map.add_child(folium.Choropleth(
+    #     geo_data=borough_gj,
+    #     name='borough layers',
+    #     fill_opacity=0.75,
+    #     fill_color= 'cadetblue'
+    #     # fill_color='#feb24c'
+    # ))
 
-    for borough, coord in borough_gj[['boro_name', 'centroid']].values:
+    for borough, geom, coord in borough_gj[['boro_name', 'geometry', 'centroid']].values:
+
+        _map.add_child(folium.Choropleth(
+            geo_data=geom,
+            name='borough layers',
+            fill_opacity=0.75,
+            fill_color=BOROUGH_COLOURS[borough]
+            # fill_color='#feb24c'
+        ))
 
         _map.add_child(folium.Marker(
                 location = coord,
@@ -230,7 +240,10 @@ def geospatial_average_distance(df: pd.DataFrame, borough_gj: gpd.GeoDataFrame) 
 
     for borough, coord in borough_gj[['boro_name', 'centroid']].values:
         
-        total_distance = sum(df.loc[df[borough_col] == borough, 'tot_trip_distance'])
+        total_distance = sum(
+            df.loc[df[borough_col] == borough, 'avg_trip_distance'] *
+            df.loc[df[borough_col] == borough, 'num_*']
+        )
         num_trips = sum(df.loc[df[borough_col] == borough, 'num_*'])
         average_distance = total_distance / num_trips
 

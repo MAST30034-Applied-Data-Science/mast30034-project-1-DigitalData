@@ -9,12 +9,14 @@ def join_by_week_by_borough(tlc_df: DataFrame, viral_df: DataFrame,
     # the viral data from the previous week 
     # (since the previous week assumedly dictates next week's choices)
 
-    # check whether it's a pu or do df
+    # check which borough column is included
     borough_col = ''
     if 'pu_borough' in tlc_df.columns:
         borough_col = 'pu_borough'
-    else:
+    elif 'do_borough' in tlc_df.columns:
         borough_col = 'do_borough'
+    else:
+        borough_col = 'borough'
 
     # join the viral and tlc dataset
     return tlc_df.join(

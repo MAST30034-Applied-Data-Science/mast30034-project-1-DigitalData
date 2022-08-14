@@ -38,11 +38,11 @@ TLC_DATES = { # the necessary dates for analysis
     # (also, inbetween times are used for time-series analysis)
 
     # for pre-COVID timeline: 52 weeks Mar 2018 - Feb 2019
-    2018: range(2,13),
+    2018: range(6,13),
     2019: range(1,13),
     # for pre-COVID timeline: 52 weeks Mar 2018 - Feb 2019
     2020: range(1,13),
-    2021: range(1,4),
+    2021: range(1,7),
 }
 
 # iterate through tlc types to download

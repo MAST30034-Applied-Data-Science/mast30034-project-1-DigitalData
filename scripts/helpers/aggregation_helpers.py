@@ -22,7 +22,7 @@ AGGREGATION_FUNCTIONS = {
 def group_and_aggregate(df: DataFrame, pop_df: DataFrame, 
         group_cols: "list[str]", agg_cols: dict) -> DataFrame:
 
-    # check whether it's a pu or do df
+    # check which borough column is included
     borough_col = ''
     if 'pu_borough' in group_cols:
         borough_col = 'pu_borough'

@@ -91,9 +91,9 @@ def set_timeline(t_year: int, t_month: int, timeline: str):
             t_year += 1
             t_month = 1
 
-set_timeline(2018, 3, 'pre')
-set_timeline(2019, 3, 'keep for graphing')
-set_timeline(2020, 3, 'post')
+set_timeline(2018, 6, 'pre')
+set_timeline(2019, 6, 'keep for graphing')
+set_timeline(2020, 6, 'post')
 
 print(df.head(100))
 
