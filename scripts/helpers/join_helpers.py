@@ -4,32 +4,37 @@ from pyspark.sql import functions as F
 import os
 
 def join_by_week_by_borough(tlc_df: DataFrame, viral_df: DataFrame, 
-        case_col: str) -> DataFrame:
+        virus_name: str) -> DataFrame:
     # I will always be joining the tlc data with 
     # the viral data from the previous week 
-    # (since the previous week generally dictates next week's choices)
+    # (since the previous week assumedly dictates next week's choices)
 
-    # TODO: commenting on join
-    out_df = tlc_df
-    out_df = out_df.join(
-        viral_df.select(
-            F.col(case_col).alias(f'pu_{case_col}'),
-            F.col('borough').alias(f'pu_borough'),
-            (F.col('week_index')).alias('prev_week_index')
-        ),
-        on = 'pu_borough'
-    ).where(F.col('week_index') == (F.col('prev_week_index') + 1))
+    # check whether it's a pu or do df
+    borough_col = ''
+    if 'pu_borough' in tlc_df.columns:
+        borough_col = 'pu_borough'
+    else:
+        borough_col = 'do_borough'
 
-    out_df = out_df.join(
+    # join the viral and tlc dataset
+    return tlc_df.join(
         viral_df.select(
-            F.col(case_col).alias(f'do_{case_col}'),
-            F.col('borough').alias(f'do_borough'),
-            (F.col('week_index')).alias('prev_week_index')
+            *[
+                F.col(colname).alias(f'{virus_name}_{colname}')
+                for colname in viral_df.columns
+            ],
+            # F.col('borough').alias(f'{virus_name}_borough'),
+            # F.col('week_index').alias(f'{virus_name}_prev_week_index'),
+            # F.col('tot_cases').alias(f'{virus_name}_tot_cases'), 
+            # F.col('daily_avg_cases').alias(f'{virus_name}_daily_avg_cases')
         ),
-        on = ['do_borough', 'prev_week_index']
+        on = [
+            (F.col(borough_col) == F.col(f'{virus_name}_borough')),
+            (F.col('week_index') == (F.col(f'{virus_name}_week_index') + 1))
+        ],
+        how = 'leftouter'
     )
 
-    return out_df
 
 def read_stacked_tlc_df(spark:SparkSession, 
         location:str = '../data/raw/tlc/yellow') -> DataFrame:

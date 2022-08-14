@@ -5,7 +5,7 @@ import pandas as pd
 import geopandas as gpd
 import folium
 
-ALL_COLOURS = ['red', 'green', 'blue', 'cyan', 'magenta', 'lime', 'orange', 'yellow']
+ALL_COLOURS = ['red', 'green', 'blue', 'orange', 'cyan', 'lime', 'magenta', 'yellow']
 
 def time_series(df: pd.DataFrame, y: str, grouping: str, ylabel: str = '',
     logy:bool = False):
@@ -115,8 +115,8 @@ def group_plot(df:pd.DataFrame, x:str, y:str, grouping:str = 'week_index',
         dpi=300)
     plt.show()
 
-def geospatial_distances_when_max(tlc_df: pd.DataFrame, viral_df: pd.DataFrame, 
-        borough_gj: gpd.GeoDataFrame, max_col: str, virus_name: str) -> folium.Map:
+def geospatial_distances_when_max(df: pd.DataFrame, borough_gj: gpd.GeoDataFrame, 
+        max_col: str, virus_name: str, legend_name: str) -> folium.Map:
     #TODO: commenting geospatial_distances_when_max
     _map = folium.Map(location=[40.66, -73.94], tiles="OpenStreetMap", zoom_start=10)
 
@@ -125,20 +125,89 @@ def geospatial_distances_when_max(tlc_df: pd.DataFrame, viral_df: pd.DataFrame,
         METERS_IN_A_MILE = 1609.34
         return miles * METERS_IN_A_MILE
 
-    df = tlc_df.merge(viral_df, 
-        left_on = ['pu_borough', 'week_ending'],
-        right_on = ['borough', 'week_ending'])
+    # check whether it's a pu or do df
+    borough_col = ''
+    if 'pu_borough' in df.columns:
+        borough_col = 'pu_borough'
+    else:
+        borough_col = 'do_borough'
 
-    colour_index = 0
-    for borough, geom, coord in borough_gj[['boro_name', 'geometry', 'centroid']].values:
+    max_cases_idx = df.groupby([borough_col])[max_col]\
+        .transform(max) == df[max_col]
 
-        _map.add_child(folium.Choropleth(
-            geo_data=geom,
-            name=borough,
-            fill_color=ALL_COLOURS[colour_index],
-            fill_opacity=0.2,
-            legend_name=borough
-        ))
+    df = df[max_cases_idx]
+
+    _map.add_child(folium.Choropleth(
+        geo_data=borough_gj,
+        name='borough layers',
+        fill_opacity=0.75,
+        data = df,
+        columns=[borough_col, max_col],
+        key_on = 'properties.boro_name',
+        fill_color='YlOrRd',
+        legend_name=legend_name
+    ))
+
+    for borough, coord in borough_gj[['boro_name', 'centroid']].values:
+        _map.add_child(folium.Marker(
+                location = coord,
+                icon = folium.DivIcon(
+                    html = f'''
+                    <h4 style=' color: black;
+                                right: 50%; top: 0%;
+                                position: absolute;
+                                transform: translate(50%,-50%);
+                                text-align: center;
+                                padding: 5px;
+                                border-radius: 10px;
+                                background-color: rgba(255, 255, 255, 0.65)'>
+                    <b>{borough}</b>
+                    </h4>
+                    '''
+                )
+            )
+        )
+
+    for borough, coord in borough_gj[['boro_name', 'centroid']].values:
+        borough_df = df[df[borough_col] == borough]
+        _map.add_child(folium.Circle(
+                location = coord,
+                # tooltip = borough,
+                radius = miles_to_meters(borough_df['avg_trip_distance'].values[0]),
+                # fill_color=ph.ALL_COLOURS[colour_index],
+                # fill_opacity=1,
+                weight=1,
+                color='black',
+            )
+        )
+
+    _map.save(f'../plots/map-avg-trip-distance-at-max-{virus_name}.html')
+    return _map
+
+def geospatial_average_distance(df: pd.DataFrame, borough_gj: gpd.GeoDataFrame) -> folium.Map:
+    #TODO: commenting geospatial_average_distance
+    _map = folium.Map(location=[40.66, -73.94], tiles="OpenStreetMap", zoom_start=10)
+
+    def miles_to_meters(miles: float)-> float:
+        # from google
+        METERS_IN_A_MILE = 1609.34
+        return miles * METERS_IN_A_MILE
+
+    # check whether it's a pu or do df
+    borough_col = ''
+    if 'pu_borough' in df.columns:
+        borough_col = 'pu_borough'
+    else:
+        borough_col = 'do_borough'
+
+    _map.add_child(folium.Choropleth(
+        geo_data=borough_gj,
+        name='borough layers',
+        fill_opacity=0.75,
+        fill_color='#feb24c'
+    ))
+
+    for borough, coord in borough_gj[['boro_name', 'centroid']].values:
 
         _map.add_child(folium.Marker(
                 location = coord,
@@ -158,23 +227,23 @@ def geospatial_distances_when_max(tlc_df: pd.DataFrame, viral_df: pd.DataFrame,
                 )
             )
         )
+
+    for borough, coord in borough_gj[['boro_name', 'centroid']].values:
         
-        borough_df = df[df['borough'] == borough]
-        borough_df = borough_df.loc[borough_df[max_col].idxmax()]
+        total_distance = sum(df.loc[df[borough_col] == borough, 'tot_trip_distance'])
+        num_trips = sum(df.loc[df[borough_col] == borough, 'num_*'])
+        average_distance = total_distance / num_trips
 
         _map.add_child(folium.Circle(
                 location = coord,
                 # tooltip = borough,
-                radius = miles_to_meters(borough_df['avg_trip_distance']),
+                radius = miles_to_meters(average_distance),
                 # fill_color=ph.ALL_COLOURS[colour_index],
                 # fill_opacity=1,
-                weight=2,
-                color=ALL_COLOURS[colour_index],
+                weight=1,
+                color='black',
             )
         )
 
-
-        colour_index += 1
-
-    _map.save(f'../plots/avg-trip-distance-at-max-{virus_name}.html')
+    _map.save(f'../plots/map-avg-trip-distance-overall.html')
     return _map

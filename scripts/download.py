@@ -21,6 +21,8 @@ dl_dict = { # the easy ones
     'tlc_zones/zones.csv': 'https://d37ci6vzurychx.cloudfront.net/misc/taxi+_zone_lookup.csv',
     'tlc_zones/zones.zip': 'https://d37ci6vzurychx.cloudfront.net/misc/taxi_zones.zip',
     'tlc_zones/boroughs.geojson': 'https://data.cityofnewyork.us/api/geospatial/tqmj-j8zm?method=export&format=GeoJSON',
+    'populations/2010-2019.xlsx': 'https://www2.census.gov/programs-surveys/popest/tables/2010-2019/counties/totals/co-est2019-annres-36.xlsx',
+    'populations/2020-2021.xlsx': 'https://www2.census.gov/programs-surveys/popest/tables/2020-2021/counties/totals/co-est2021-pop-36.xlsx',
     'virals/covid/cases-by-day.csv': 'https://raw.githubusercontent.com/nychealth/coronavirus-data/master/trends/data-by-day.csv',
     'virals/flu/cases-by-week.csv': 'https://health.data.ny.gov/api/views/jr8b-6gh6/rows.csv?accessType=DOWNLOAD',
 }
