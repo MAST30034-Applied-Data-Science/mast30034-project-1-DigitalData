@@ -41,37 +41,43 @@ TODO: \href{https://github.com/MAST30034-Applied-Data-Science/mast30034\_p1\_tem
 \section{Introduction}
 % Link to a 30 min tutorial if you require revision: https://www.overleaf.com/learn/latex/Learn_LaTeX_in_30_minutes
 
-Viral infection is on everyone's mind in the past few years due to the COVID-19 pandemic.
-With lockdowns and fears of infection, 
-it is a natural assumption that many people-facing industries such as ride-hailing have suffered in demand.
+Viruses are currently on everyone's due to the COVID-19 pandemic.
+With the shift to working from home, lockdowns and fears of infection, 
+it is natural to assume that people-facing industries are no longer relied upon to the same degree.
+% it is a natural assumption that many people-facing industries such as ride-hailing have suffered in demand.
 To what extent is such an assumption true?
+This report investigates possible correlations between measures of reliance on taxi services, and virus case rates.
+While most research is satisfied with measuring correlations with demand in the form of usage frequency, 
+the focus for this report is placed on measurements which reflect reliance more than demand.
 
-% TODO: redo this intro section its kinda bad
-This report aims to contribute to a body of works attempting to quantify the effect that widespread viruses may have on different industries.
+Specific to taxi services, two key measurements of reliance are average travel radius/distance and average passenger count.
+Both of these measurements will correlate to the level of trust the average person places in a taxi service over its alternatives.
+For example, one may trust their own cars for interstate travel, 
+but may be happy to pay for a street-hail on the way home from work (and similar logic may apply to trust in taxis with numbers of passengers).
 
-Statistical analysis involved in revealing the extent to which case rates of a viral infection correlates with taxi trip rates and passenger counts.
+Detailed throughout this report are steps taken to model average weekly trip distances and passenger counts against
+the case rates of two key viruses of recent importance: COVID-19 and Influenza.
 
 \subsection{Timeline}
-Throughout this report, several timelines are used.
+Throughout this report, two timelines are used.
 \begin{itemize}
-    \item \textbf{Timeline 1:} Starting in March 2018 and ending in February 2021.
-    This 36-month timeline is primarily used in visualizations.
-    \item \textbf{Timeline 2:} Starting in March 2018 and ending in February 2019.
-    This 12-month timeline provides a window of time prior to the COVID-19 pandemic.
-    It is used when data analysis focuses only on the effects of the Influenza virus 
-    (since the effects of COVID-19 are likely confounding).
-    \item \textbf{Timeline 3:} Starting in March 2020 and ending in February 2021.
+    \item \textbf{Timeline 1:} Starting in July 2018 and ending in June 2021.
+    This 36-month timeline is used exclusively for time-series plots.
+    % \item \textbf{Timeline 2:} Starting in July 2018 and ending in June 2019.
+    % This 12-month timeline provides a window of time prior to the COVID-19 pandemic.
+    % It is used when data analysis focuses only on the effects of the Influenza virus 
+    % (since the effects of COVID-19 are likely confounding).
+    \item \textbf{Timeline 2:} Starting in July 2020 and ending in June 2021.
     This 12-month timeline provides a window of time during the COVID-19 pandemic.
-    This timeline is used to construct linear models and perform non-visual data analysis.
+    This timeline is used to construct linear models and generate other all other visualizations.
 \end{itemize}
 Data from 2022 is not included, as many of the datasets would be incomplete or unchecked.
-Data from before 2018 is not included so that Timeline 2 and Timeline 3 are the same duration (12 months), 
-and to reduce code runtime when generating visualizations.
+Data from before 2018 is not included to reduce code runtime when generating visualizations.
 
 \subsection{Datasets}
 \begin{itemize}
     \item The New York City Taxi and Limousine Commission (TLC) provides a dataset of taxi service trips which captures information such as type of taxi, travel distance, general pickup/dropoff locations/times and driver-input passenger counts \cite{tlcdataset}. 
-In this report, the focus is placed on New York's Yellow street hail taxis. The dataset provides coverage over the whole of Timeline 1.
+In this report, the focus is placed on New York's Yellow street hail taxis. The dataset provides coverage over the whole of Timeline 2.
 Also included from the same source is a mapping dataset for the pickup/dropoff location IDs included in the TLC dataset \cite{tlcdataset}.
     \item Influenza case rates are recorded on a weekly basis by the New York Department of Health \cite{fludataset}. 
 Case rates in this dataset are dated based on Morbidity and Mortality Weekly Report (MMWR) weeks, which are generated using rules defined by the CDC \cite{mmwr}.
@@ -161,18 +167,17 @@ Only data for New York City counties within the years of Timeline 1 is kept.
 \end{multicols}
 
 \textbf{COVID-19 Dataset:}
-% \begin{multicols}{2}
+This dataset is very simple, and therefore requires very little preprocessing.
     \begin{enumerate}
-        \item Extract the case count per day per borough. Discard rows with negative case counts.
+        \item Extract the case count per day per borough.
         \item Derive the MMWR week associated to each day entry, as well as the year and month that the majority of the week participates in.
         Discard all rows where the MMWR week is not within Timeline 1.
     \end{enumerate}
 % \end{multicols}
 
 \textbf{Influenza Dataset:}
-% \begin{multicols}{2}
+Much like the COVID-19 dataset, this one is very simple, and therefore requires very little preprocessing.
     \begin{enumerate}
-        \item Discard rows with negative case counts.
         \item Convert counties to their associated borough names for homogeneity of data.
         \item Discard all rows where the MMWR week is not within Timeline 1.
     \end{enumerate}
@@ -183,40 +188,60 @@ Only data for New York City counties within the years of Timeline 1 is kept.
 \textbf{TLC Dataset:}
 
 From this dataset, two aggregated datasets are generated.
-One aggregated by MMWR week and pickup borough, and the other aggregates by MMWR week and dropoff borough.
-This allows for analysis by destination, or starting point of taxi trips.
+One aggregated by MMWR week and pickup borough, and the other aggregated by MMWR week and dropoff borough.
+This allows for a granular look at potential pattern differences between reliance measures grouped by dropoff or grouped by pickup locations.
 The aggregated sets are then joined by MMWR year and borough to their corresponding population estimated.
 For each of the groupings described above, 
-the average trip distance and passenger count is calculated, 
-as well as the total number of trips, and the number of trips per capita (derived using the borough's population estimate).
+the average trip distance and passenger count is calculated.
+This aggregation over Timeline 1 results in approximately $3 \text{ years} \times 12 \text{ months} \times 4 \text{ weeks} = 144 \text{ rows per borough}$.
 
-\textbf{COVID-19 Dataset:}
+\textbf{COVID-19 and Flu Datasets:}
 
-Similarly to the above, the dataset is grouped by MMWR week information and borough.
-This grouping is joined by MMWR year and borough with the corresponding population estimates.
-For each grouping, the total number of cases and total per capita are calculated.
-
-\textbf{Flu Dataset:}
-
-Similarly to the above, the dataset is grouped by MMWR week information and borough.
-This grouping is joined by MMWR year and borough with the corresponding population estimates.
-For each grouping, the case total per capita is calculated (the case total per MMWR week per borough is already included).
+Similarly to the above, the datasets are grouped by MMWR week information and borough where necessary.
+This grouping is joined by MMWR year and borough with the corresponding borough's population estimates in a given year.
+For each grouping, the weekly case rate per 100'000 people in the borough is calculated.
 
 \subsection{Analysis and Modelling}
 
+This section of the report highlights the analysis performed on the aggregated data
+and describes the models generated for passenger counts and trip distances.
+
 \subsubsection{Preliminary Analysis}
 
-It appears that there very clearly is a dip in passengers, 
-trip rates and trip distances following the start of the COVID-19 pandemic.
+\textbf{Aggregation Averages:}
+
+Since aggregation is performed on a mass scale, there is the risk of losing a lot of information present in the granularity of per-trip or per-day datasets.
+However, aggregating on a mass scale is beneficial in that the averages calculated (for distance and passenger count)
+a less prone to variability. As described by the Central Limit Theorem, as sample size $n$ increases for a sample mean $\bar{X}$,
+\begin{equation*}
+    \text{var}(\bar{X}) \propto \frac{1}{n}
+\end{equation*}
+Therefore, since there over 150 million trips contained within Timeline 1, the sample size per week per borough is in the hundreds of thousands trips (assuming an even distribution of trips). 
+
+\textbf{Time-Series Analysis:}
+
+It is important to note 
+a feature which appears in nearly any time-series that includes 
+the months of March to May 2020. 
+The following time-series plots will all contain a similar "COVID dip".
+
+Shown in Figure~\ref{fig:ts-dist-weeks} is the change in average trip distance over time. Interestingly, 
+while most boroughs (pickup or dropoff) experience a slump in average trip distance following the "COVID dip", 
+Staten Island appears to recover from the effects, and even increase in average trip distance
+during the COVID-19 pandemic.
 
 \begin{figure}[h]
     % change the scale multiplier to make the figures smaller or larger
-    \includegraphics[width=0.45\textwidth]{../plots/time-series-Total Trips Per 100'000 People (log scale)-vs-MMWR Weeks (End Dates)-by-pu_borough.png}
-    \includegraphics[width=0.45\textwidth]{../plots/time-series-Total Trips Per 100'000 People (log scale)-vs-MMWR Weeks (End Dates)-by-do_borough.png}
+    \includegraphics[width=0.45\textwidth]{../plots/time-series-Average Trip Distance-vs-MMWR Weeks (End Dates)-by-pu_borough.png}
+    \includegraphics[width=0.45\textwidth]{../plots/time-series-Average Trip Distance-vs-MMWR Weeks (End Dates)-by-do_borough.png}
     % this ensures your figures are centered where possible
     \centering
     \caption{How trip rates per 100k people per pickup (left) and dropoff (right) borough vary over time.} % refer to this image as (Figure 1)
+    \label{fig:ts-dist-weeks}
 \end{figure}
+
+This uptick in travel distance is likely caused to do the reduced usage of the Staten Island ferry and the reduced schedule during the pandemic \cite{dot2020}.
+If this is the case, then Figure~\ref{fig:ts-dist-weeks} suggests that people from Staten Island rely on taxis to be safer and ontime over the ferry service.
 
 % \begin{enumerate} 
 %     \item Example for enumerated points
@@ -255,12 +280,25 @@ trip rates and trip distances following the start of the COVID-19 pandemic.
 
 \subsection{Geospatial Visualisation}
 
-\section{Recommendations}
-% \lipsum[10]
-
 \section{Conclusions}
-% \lipsum[14-15]
 
+This report provides a brief, but thorough look at correlations to simple reliance statistics.
+
+
+\section{Recommendations}
+This has been a thorough, but brief look into correlations between viruses and reliance metrics.
+The following are several paths on which further research in this area could begin:
+\begin{itemize}
+    \item There is the obvious path of modelling demand in the form of trip rates with respect to viral case rates. 
+    \item It may be beneficial to begin generating models of repeated trips between the same locations,
+    which could suggest patterns of use.
+    \item Another way in which the research could be deepened would be to select a subset of specific locations where trips going to/from are likely work-related. 
+    This would provide a window into measuring the shift to working from home caused by viruses.
+    \item Finally, the results generated in this report are far from conclusive or exhaustive.
+    As data is collected over the years, more accurate models may be constructed. 
+    While the focus may remain on modelling against COVID-19 and Influenza rates, 
+    other viral statistics such as the prevalence of HIV/AIDS should also be considered for potential correlations.
+\end{itemize}
 
 \clearpage
 

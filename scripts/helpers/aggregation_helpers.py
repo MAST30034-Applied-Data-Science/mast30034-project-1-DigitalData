@@ -47,8 +47,13 @@ def group_and_aggregate(df: DataFrame, pop_df: DataFrame,
     for colname, func_types in agg_cols.items():
         for func_type in func_types:
             prefix, func = AGGREGATION_FUNCTIONS[func_type]
+
+            new_colname = colname
+            if '*' == colname:
+                new_colname = 'trips'
+
             column_aggregates.append(
-                func(colname).alias(f'{prefix}{colname}')
+                func(colname).alias(f'{prefix}{new_colname}')
             )
 
     return grouped_df.agg(*column_aggregates)
