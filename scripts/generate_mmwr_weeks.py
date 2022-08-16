@@ -76,10 +76,10 @@ for year in range(start_year, end_year + 1):
 df = pd.DataFrame(cdc_weeks)
 
 # define the two timelines of analysis ('pre' vs 'post')
-df['timeline'] = 'neither'
+df['timeline'] = 0
 
-def set_timeline(t_year: int, t_month: int, timeline: str):
-    for i in range(1, 13):
+def set_timeline(t_year: int, t_month: int, timeline: int, duration: int = 12):
+    for i in range(1, duration + 1):
         df.loc[
             lambda sdf: (sdf['week_year'] == t_year) 
                         & (sdf['week_month'] == t_month), 
@@ -91,11 +91,12 @@ def set_timeline(t_year: int, t_month: int, timeline: str):
             t_year += 1
             t_month = 1
 
-set_timeline(2018, 6, 'no')
-set_timeline(2019, 6, 'no')
-set_timeline(2020, 7, 'yes')
+set_timeline(2018, 7, 1, 24)
+set_timeline(2020, 7, 2)
 
-print(df.head(100))
+print('GENERATED MMWR WEEKS TABLE')
+print('PRINTING EVERY 50TH ROWS')
+print(df.iloc[::50, :].head(df.size))
 
 # define the path
 def mmwr_path(folder):

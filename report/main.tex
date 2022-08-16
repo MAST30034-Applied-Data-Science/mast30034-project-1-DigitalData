@@ -165,6 +165,12 @@ Only data for New York City counties within the years of Timeline 1 is kept.
         Discard all rows where either of the location IDs are not within the 5 boroughs.
     \end{enumerate}
 \end{multicols}
+It is important to note that passenger count is a self-reported metric, 
+meaning the original dataset contains many trip records without a recorded passenger count.
+Any results from the aggregated data (whether they analyse trip distances or passenger counts) 
+only consider the subset of results where a passenger count was defined.
+This is not an issue, since after the above cleaning processes,
+there are still over 150 million trip records over the span of Timeline 1.
 
 \textbf{COVID-19 Dataset:}
 This dataset is very simple, and therefore requires very little preprocessing.
@@ -201,13 +207,6 @@ Similarly to the above, the datasets are grouped by MMWR week information and bo
 This grouping is joined by MMWR year and borough with the corresponding borough's population estimates in a given year.
 For each grouping, the weekly case rate per 100'000 people in the borough is calculated.
 
-\subsection{Analysis and Modelling}
-
-This section of the report highlights the analysis performed on the aggregated data
-and describes the models generated for passenger counts and trip distances.
-
-\subsubsection{Preliminary Analysis}
-
 \textbf{Aggregation Averages:}
 
 Since aggregation is performed on a mass scale, there is the risk of losing a lot of information present in the granularity of per-trip or per-day datasets.
@@ -216,7 +215,15 @@ a less prone to variability. As described by the Central Limit Theorem, as sampl
 \begin{equation*}
     \text{var}(\bar{X}) \propto \frac{1}{n}
 \end{equation*}
-Therefore, since there over 150 million trips contained within Timeline 1, the sample size per week per borough is in the hundreds of thousands trips (assuming an even distribution of trips). 
+Therefore, since there over 150 million trips contained within Timeline 1, the sample size per week per borough is in the hundreds of thousands trips (assuming an even distribution of trips),
+minimizing the variance of the sample means used.
+
+\subsection{Analysis and Modelling}
+
+This section of the report highlights the analysis performed on the aggregated data
+and describes the models generated for passenger counts and trip distances.
+
+\subsubsection{Preliminary Analysis}
 
 \textbf{Time-Series Analysis:}
 
@@ -236,12 +243,47 @@ during the COVID-19 pandemic.
     \includegraphics[width=0.45\textwidth]{../plots/time-series-Average Trip Distance-vs-MMWR Weeks (End Dates)-by-do_borough.png}
     % this ensures your figures are centered where possible
     \centering
-    \caption{How trip rates per 100k people per pickup (left) and dropoff (right) borough vary over time.} % refer to this image as (Figure 1)
+    \caption{How average trip distances per week per pickup (left) and dropoff (right) borough vary over time.} % refer to this image as (Figure 1)
     \label{fig:ts-dist-weeks}
 \end{figure}
 
-This uptick in travel distance is likely caused to do the reduced usage of the Staten Island ferry and the reduced schedule during the pandemic \cite{dot2020}.
-If this is the case, then Figure~\ref{fig:ts-dist-weeks} suggests that people from Staten Island rely on taxis to be safer and ontime over the ferry service.
+This uptick in travel distance is likely caused by reduced usage of the Staten Island ferry and the reduced schedule during the pandemic \cite{dot2020}.
+If this is the case, then Figure~\ref{fig:ts-dist-weeks} suggests that people travelling to and from Staten Island rely on taxis to be safer and ontime over the ferry service.
+The trip distances between boroughs are generally not very homoegeneous. 
+A likely reason for this heterogeneity is the difference in commutes to work, since
+many jobs are likely placed in the business centre of the city, contained within Manhattan.
+
+Figure~\ref{fig:ts-pass-count-weeks} shows average trip passenger counts per MMWR week.
+According to Figures~\ref{fig:ts-dist-weeks} and \ref{fig:ts-pass-count-weeks}, 
+it appears as though passenger counts experience more drastic variation week-on-week.
+Such instability may present in a weaker linear model being generated for passenger count.
+\begin{figure}[h]
+    % change the scale multiplier to make the figures smaller or larger
+    \includegraphics[width=0.45\textwidth]{../plots/time-series-Average Passengers Per Trip-vs-MMWR Weeks (End Dates)-by-pu_borough.png}
+    \includegraphics[width=0.45\textwidth]{../plots/time-series-Average Passengers Per Trip-vs-MMWR Weeks (End Dates)-by-do_borough.png}
+    % this ensures your figures are centered where possible
+    \centering
+    \caption{How average passenger count per week per pickup (left) and dropoff (right) borough vary over time.} % refer to this image as (Figure 1)
+    \label{fig:ts-pass-count-weeks}
+\end{figure}
+
+The greatest instability in passenger counts appears to come from trips going to or from Staten Island,
+while travel to or from other boroughs appears more stable and similar week-on-week. 
+This may also come as a result of Staten Island's separation from the other boroughs,
+however a true cause and effect relationship on this phenomenon would require an extensive research paper on its own.
+
+\subsection{Geospatial Visualisation}
+
+While the above plots display variations in average trip distance over time, 
+it may be important to contextualise what these distances mean for each borough.
+
+
+\subsection{Linear Modelling}
+It is important to note that both average trip distances and passenger counts 
+are random variables with different properties, and therefore require different linear models.
+Trip distances are a continuous metric, while passenger counts are discrete, but neither can be negative.
+This means that two different forms of linear model are used to model each measure.
+
 
 % \begin{enumerate} 
 %     \item Example for enumerated points
@@ -277,8 +319,6 @@ If this is the case, then Figure~\ref{fig:ts-dist-weeks} suggests that people fr
 % \end{align*}
 
 % Example of an in-line equation $\epsilon \sim N(0, 1)$ \\
-
-\subsection{Geospatial Visualisation}
 
 \section{Conclusions}
 

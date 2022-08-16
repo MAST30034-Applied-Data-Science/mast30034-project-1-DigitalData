@@ -21,10 +21,10 @@ dl_dict = { # the easy ones
     'tlc_zones/zones.csv': 'https://d37ci6vzurychx.cloudfront.net/misc/taxi+_zone_lookup.csv',
     'tlc_zones/zones.zip': 'https://d37ci6vzurychx.cloudfront.net/misc/taxi_zones.zip',
     'tlc_zones/boroughs.geojson': 'https://data.cityofnewyork.us/api/geospatial/tqmj-j8zm?method=export&format=GeoJSON',
-    'populations/2010-2019.xlsx': 'https://www2.census.gov/programs-surveys/popest/tables/2010-2019/counties/totals/co-est2019-annres-36.xlsx',
-    'populations/2020-2021.xlsx': 'https://www2.census.gov/programs-surveys/popest/tables/2020-2021/counties/totals/co-est2021-pop-36.xlsx',
-    'virals/covid/cases-by-day.csv': 'https://raw.githubusercontent.com/nychealth/coronavirus-data/master/trends/data-by-day.csv',
-    'virals/flu/cases-by-week.csv': 'https://health.data.ny.gov/api/views/jr8b-6gh6/rows.csv?accessType=DOWNLOAD',
+    'populations/2010_2019.xlsx': 'https://www2.census.gov/programs-surveys/popest/tables/2010-2019/counties/totals/co-est2019-annres-36.xlsx',
+    'populations/2020_2021.xlsx': 'https://www2.census.gov/programs-surveys/popest/tables/2020-2021/counties/totals/co-est2021-pop-36.xlsx',
+    'virals/covid/cases_by_day.csv': 'https://raw.githubusercontent.com/nychealth/coronavirus-data/master/trends/data-by-day.csv',
+    'virals/flu/cases_by_week.csv': 'https://health.data.ny.gov/api/views/jr8b-6gh6/rows.csv?accessType=DOWNLOAD',
 }
 
 # add the tlc data over the defined timeline(s)
@@ -32,16 +32,14 @@ URL_TLC_TEMPLATE = 'https://d37ci6vzurychx.cloudfront.net/trip-data/'
 TLC_NAMES = ['yellow'] # ,'fhvhv'] # this was taking too long
 TLC_DATES = { # the necessary dates for analysis
 
-    # note: the timelines defined in this code have padding. 
-    # This is because the final data is grouped by mmwr weeks, 
-    # which do not necessarily align within month definitions.
-    # (also, inbetween times are used for time-series analysis)
+    # note: the timelines defined in this code have padding months at the start 
+    # and at the end. This is because the final data is grouped by mmwr weeks, 
+    # which do not align with months perfectly 
+    # (some weeks contain days from 2 different months).
 
-    # for pre-COVID timeline: 52 weeks Mar 2018 - Feb 2019
-    # 2018: range(6,13),
-    # 2019: range(1,13),
-    # for pre-COVID timeline: 52 weeks Mar 2018 - Feb 2019
-    2020: range(6,13),
+    2018: range(6,13),
+    2019: range(1,13),
+    2020: range(1,13), # Timeline 2 starts here
     2021: range(1,8),
 }
 
@@ -58,7 +56,7 @@ for name in TLC_NAMES:
 
             # add this file to the download dictionary
             dl_dict[
-                f'tlc/{name}/{year}-{month}.parquet'
+                f'tlc/{name}/{year}_{month}.parquet'
             ] = f'{URL_TLC_TEMPLATE}{name}_tripdata_{year}-{month}.parquet'
 
 # start the time measurement

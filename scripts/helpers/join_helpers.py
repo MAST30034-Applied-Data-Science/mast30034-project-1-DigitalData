@@ -39,7 +39,7 @@ def join_by_week_by_borough(tlc_df: DataFrame, viral_df: DataFrame,
 
 
 def read_stacked_tlc_df(spark:SparkSession, 
-        location:str = '../data/raw/tlc/yellow') -> DataFrame:
+        location:str = '../../data/raw/tlc/yellow') -> DataFrame:
 
     stacked_df = None
 

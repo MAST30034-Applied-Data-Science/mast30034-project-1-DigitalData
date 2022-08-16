@@ -114,8 +114,11 @@ def scatter(df:pd.DataFrame, x:str, y:str, xlabel:str = '', ylabel:str = '',
 
 def geospatial_distances_when_max(df: pd.DataFrame, borough_gj: gpd.GeoDataFrame, 
         max_col: str, virus_name: str, legend_name: str) -> folium.Map:
+
     #TODO: commenting geospatial_distances_when_max
-    _map = folium.Map(location=[40.66, -73.94], tiles="OpenStreetMap", zoom_start=10)
+    # _map = folium.Map(location=[40.72, -73.94], tiles="Stamen Terrain", zoom_start=10)
+    _map = folium.Map(location=[40.72, -73.94], 
+        tiles="CartoDB PositronNoLabels", zoom_start=10)
 
     def miles_to_meters(miles: float)-> float:
         # from google
@@ -157,9 +160,10 @@ def geospatial_distances_when_max(df: pd.DataFrame, borough_gj: gpd.GeoDataFrame
                                 position: absolute;
                                 transform: translate(50%,-50%);
                                 text-align: center;
-                                padding: 5px;
+                                padding: 3px;
                                 border-radius: 10px;
-                                background-color: rgba(255, 255, 255, 0.65)'>
+                                background-color: rgba(255, 255, 255, 0.65)
+                                '>
                     <b>{borough}</b>
                     </h4>
                     '''
@@ -175,17 +179,19 @@ def geospatial_distances_when_max(df: pd.DataFrame, borough_gj: gpd.GeoDataFrame
                 radius = miles_to_meters(borough_df['avg_trip_distance'].values[0]),
                 # fill_color=ph.ALL_COLOURS[colour_index],
                 # fill_opacity=1,
-                weight=1,
+                weight=1.5,
                 color='black',
             )
         )
 
-    _map.save(f'../plots/map-avg-trip-distance-at-max-{virus_name}.html')
+    _map.save(f'../plots/map-avg-trip-distance-at-max-{virus_name}-by-{borough_col}.html')
+
     return _map
 
 def geospatial_average_distance(df: pd.DataFrame, borough_gj: gpd.GeoDataFrame) -> folium.Map:
     #TODO: commenting geospatial_average_distance
-    _map = folium.Map(location=[40.66, -73.94], tiles="OpenStreetMap", zoom_start=10)
+    _map = folium.Map(location=[40.66, -73.94], 
+        tiles="CartoDB PositronNoLabels", zoom_start=10)
 
     def miles_to_meters(miles: float)-> float:
         # from google
@@ -242,9 +248,9 @@ def geospatial_average_distance(df: pd.DataFrame, borough_gj: gpd.GeoDataFrame) 
         
         total_distance = sum(
             df.loc[df[borough_col] == borough, 'avg_trip_distance'] *
-            df.loc[df[borough_col] == borough, 'num_*']
+            df.loc[df[borough_col] == borough, 'num_trips']
         )
-        num_trips = sum(df.loc[df[borough_col] == borough, 'num_*'])
+        num_trips = sum(df.loc[df[borough_col] == borough, 'num_trips'])
         average_distance = total_distance / num_trips
 
         _map.add_child(folium.Circle(
@@ -253,10 +259,11 @@ def geospatial_average_distance(df: pd.DataFrame, borough_gj: gpd.GeoDataFrame) 
                 radius = miles_to_meters(average_distance),
                 # fill_color=ph.ALL_COLOURS[colour_index],
                 # fill_opacity=1,
-                weight=1,
+                weight=1.5,
                 color='black',
             )
         )
 
-    _map.save(f'../plots/map-avg-trip-distance-overall.html')
+    _map.save(f'../plots/map-avg-trip-distance-overall-{borough_col}.html')
+
     return _map
