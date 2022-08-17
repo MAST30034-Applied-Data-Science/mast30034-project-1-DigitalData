@@ -161,7 +161,7 @@ Only data for New York City counties within the years of Timeline 1 is kept.
         \item Discard rows with null values in the above columns or where there is negative distance.
         \item Derive the MMWR week associated to each trip entry, as well as the year and month that the majority of the week participates in.
         Discard all rows where the MMWR week is not within Timeline 1.
-        \item For each entry, find the associated pickup borough and dropoff borough. 
+        \item For each entry, find the associated pickup borough. 
         Discard all rows where either of the location IDs are not within the 5 boroughs.
     \end{enumerate}
 \end{multicols}
@@ -172,50 +172,39 @@ only consider the subset of results where a passenger count was defined.
 This is not an issue, since after the above cleaning processes,
 there are still over 150 million trip records over the span of Timeline 1.
 
-\textbf{COVID-19 Dataset:}
+\textbf{COVID-19 and Influenza Datasets:}
 This dataset is very simple, and therefore requires very little preprocessing.
-    \begin{enumerate}
-        \item Extract the case count per day per borough.
-        \item Derive the MMWR week associated to each day entry, as well as the year and month that the majority of the week participates in.
-        Discard all rows where the MMWR week is not within Timeline 1.
-    \end{enumerate}
-% \end{multicols}
-
-\textbf{Influenza Dataset:}
-Much like the COVID-19 dataset, this one is very simple, and therefore requires very little preprocessing.
-    \begin{enumerate}
-        \item Convert counties to their associated borough names for homogeneity of data.
-        \item Discard all rows where the MMWR week is not within Timeline 1.
-    \end{enumerate}
-% \end{multicols}
+First, the case count per day per borough is extracted. 
+Then, the MMWR week associated to each entry, as well as the year and month that the majority of the week participates in are derived (where necessary).
+Finally, all rows where the MMWR week is not within Timeline 1 are discarded.
+For the Influenza dataset, 
+counties are converted to their associated borough names for homogeneity of data.
 
 \subsubsection{Aggregation}
 
 \textbf{TLC Dataset:}
-
-From this dataset, two aggregated datasets are generated.
-One aggregated by MMWR week and pickup borough, and the other aggregated by MMWR week and dropoff borough.
-This allows for a granular look at potential pattern differences between reliance measures grouped by dropoff or grouped by pickup locations.
-The aggregated sets are then joined by MMWR year and borough to their corresponding population estimated.
-For each of the groupings described above, 
+This dataset is aggregates by MMWR week and pickup borough.
+This allows for a granular look at potential pattern differences between the reliance measures grouped by pickup locations.
+The aggregated set is then joined by MMWR year and borough to the corresponding population estimate.
+For the groupings described above, 
 the average trip distance and passenger count is calculated.
 This aggregation over Timeline 1 results in approximately $3 \text{ years} \times 12 \text{ months} \times 4 \text{ weeks} = 144 \text{ rows per borough}$.
 
-\textbf{COVID-19 and Flu Datasets:}
+This report only performs grouping by pickup location,
+allowing models to reflect a potential taxi customer's perspective on their immediate surroundings before taking a trip.
+However, exploration of differences between grouping by pickup or dropoff location on the results of models 
+is a recommended extension to this research.
 
+\textbf{COVID-19 and Influenza Datasets:}
 Similarly to the above, the datasets are grouped by MMWR week information and borough where necessary.
 This grouping is joined by MMWR year and borough with the corresponding borough's population estimates in a given year.
 For each grouping, the weekly case rate per 100'000 people in the borough is calculated.
 
 \textbf{Aggregation Averages:}
-
 Since aggregation is performed on a mass scale, there is the risk of losing a lot of information present in the granularity of per-trip or per-day datasets.
 However, aggregating on a mass scale is beneficial in that the averages calculated (for distance and passenger count)
-a less prone to variability. As described by the Central Limit Theorem, as sample size $n$ increases for a sample mean $\bar{X}$,
-\begin{equation*}
-    \text{var}(\bar{X}) \propto \frac{1}{n}
-\end{equation*}
-Therefore, since there over 150 million trips contained within Timeline 1, the sample size per week per borough is in the hundreds of thousands trips (assuming an even distribution of trips),
+a less prone to variability. As described by the Central Limit Theorem, as sample size $n$ increases for a sample mean $\bar{X}$, 
+$\text{var}(\bar{X}) \propto \frac{1}{n}$. Therefore, since there over 150 million trips contained within Timeline 1, the sample size per week per borough is in the hundreds of thousands trips (assuming an even distribution of trips),
 minimizing the variance of the sample means used.
 
 \subsection{Analysis and Modelling}
@@ -226,7 +215,6 @@ and describes the models generated for passenger counts and trip distances.
 \subsubsection{Preliminary Analysis}
 
 \textbf{Time-Series Analysis:}
-
 It is important to note 
 a feature which appears in nearly any time-series that includes 
 the months of March to May 2020. 
@@ -237,53 +225,162 @@ while most boroughs (pickup or dropoff) experience a slump in average trip dista
 Staten Island appears to recover from the effects, and even increase in average trip distance
 during the COVID-19 pandemic.
 
-\begin{figure}[h]
-    % change the scale multiplier to make the figures smaller or larger
-    \includegraphics[width=0.45\textwidth]{../plots/time-series-Average Trip Distance-vs-MMWR Weeks (End Dates)-by-pu_borough.png}
-    \includegraphics[width=0.45\textwidth]{../plots/time-series-Average Trip Distance-vs-MMWR Weeks (End Dates)-by-do_borough.png}
-    % this ensures your figures are centered where possible
-    \centering
-    \caption{How average trip distances per week per pickup (left) and dropoff (right) borough vary over time.} % refer to this image as (Figure 1)
-    \label{fig:ts-dist-weeks}
-\end{figure}
+\begin{multicols}{2}
+    \begin{figure}[H]
+        % change the scale multiplier to make the figures smaller or larger
+        \includegraphics[width=0.5\textwidth]{../plots/time-series-Average Trip Distance-vs-MMWR Weeks (End Dates)-by-pu_borough.png}
+        % \includegraphics[width=0.45\textwidth]{../plots/time-series-Average Trip Distance-vs-MMWR Weeks (End Dates)-by-do_borough.png}
+        % this ensures your figures are centered where possible
+        \centering
+        \caption{How average trip distances per week per pickup borough vary over time.} % refer to this image as (Figure 1)
+        \label{fig:ts-dist-weeks}
+    \end{figure}
+
+    \begin{figure}[H]
+        % change the scale multiplier to make the figures smaller or larger
+        \includegraphics[width=0.5\textwidth]{../plots/time-series-Average Passengers Per Trip-vs-MMWR Weeks (End Dates)-by-pu_borough.png}
+        % \includegraphics[width=0.45\textwidth]{../plots/time-series-Average Passengers Per Trip-vs-MMWR Weeks (End Dates)-by-do_borough.png}
+        % this ensures your figures are centered where possible
+        \centering
+        \caption{How average passenger counts per week per pickup borough vary over time.} % refer to this image as (Figure 1)
+        \label{fig:ts-pass-count-weeks}
+    \end{figure}
+\end{multicols}
+
+% \begin{figure}[h]
+%     % change the scale multiplier to make the figures smaller or larger
+%     \includegraphics[width=0.45\textwidth]{../plots/time-series-Average Trip Distance-vs-MMWR Weeks (End Dates)-by-pu_borough.png}
+%     \includegraphics[width=0.45\textwidth]{../plots/time-series-Average Trip Distance-vs-MMWR Weeks (End Dates)-by-do_borough.png}
+%     % this ensures your figures are centered where possible
+%     \centering
+%     \caption{How average trip distances per week per pickup (left) and dropoff (right) borough vary over time.} % refer to this image as (Figure 1)
+%     \label{fig:ts-dist-weeks}
+% \end{figure}
 
 This uptick in travel distance is likely caused by reduced usage of the Staten Island ferry and the reduced schedule during the pandemic \cite{dot2020}.
 If this is the case, then Figure~\ref{fig:ts-dist-weeks} suggests that people travelling to and from Staten Island rely on taxis to be safer and ontime over the ferry service.
 The trip distances between boroughs are generally not very homoegeneous. 
 A likely reason for this heterogeneity is the difference in commutes to work, since
-many jobs are likely placed in the business centre of the city, contained within Manhattan.
+many jobs are likely located in Manhattan.
 
 Figure~\ref{fig:ts-pass-count-weeks} shows average trip passenger counts per MMWR week.
 According to Figures~\ref{fig:ts-dist-weeks} and \ref{fig:ts-pass-count-weeks}, 
 it appears as though passenger counts experience more drastic variation week-on-week.
 Such instability may present in a weaker linear model being generated for passenger count.
-\begin{figure}[h]
-    % change the scale multiplier to make the figures smaller or larger
-    \includegraphics[width=0.45\textwidth]{../plots/time-series-Average Passengers Per Trip-vs-MMWR Weeks (End Dates)-by-pu_borough.png}
-    \includegraphics[width=0.45\textwidth]{../plots/time-series-Average Passengers Per Trip-vs-MMWR Weeks (End Dates)-by-do_borough.png}
-    % this ensures your figures are centered where possible
-    \centering
-    \caption{How average passenger count per week per pickup (left) and dropoff (right) borough vary over time.} % refer to this image as (Figure 1)
-    \label{fig:ts-pass-count-weeks}
-\end{figure}
+% \begin{figure}[h]
+%     % change the scale multiplier to make the figures smaller or larger
+%     \includegraphics[width=0.45\textwidth]{../plots/time-series-Average Passengers Per Trip-vs-MMWR Weeks (End Dates)-by-pu_borough.png}
+%     \includegraphics[width=0.45\textwidth]{../plots/time-series-Average Passengers Per Trip-vs-MMWR Weeks (End Dates)-by-do_borough.png}
+%     % this ensures your figures are centered where possible
+%     \centering
+%     \caption{How average passenger count per week per pickup (left) and dropoff (right) borough vary over time.} % refer to this image as (Figure 1)
+%     \label{fig:ts-pass-count-weeks}
+% \end{figure}
+
+
+% \begin{figure}[H]
+%     % change the scale multiplier to make the figures smaller or larger
+%     \includegraphics[width=0.5\textwidth]{../plots/time-series-Average Passengers Per Trip-vs-MMWR Weeks (End Dates)-by-pu_borough.png}
+%     % \includegraphics[width=0.45\textwidth]{../plots/time-series-Average Passengers Per Trip-vs-MMWR Weeks (End Dates)-by-do_borough.png}
+%     % this ensures your figures are centered where possible
+%     \centering
+%     \caption{How average passenger counts per week per pickup borough vary over time.} % refer to this image as (Figure 1)
+%     \label{fig:ts-pass-count-weeks}
+% \end{figure}
+
 
 The greatest instability in passenger counts appears to come from trips going to or from Staten Island,
 while travel to or from other boroughs appears more stable and similar week-on-week. 
 This may also come as a result of Staten Island's separation from the other boroughs,
-however a true cause and effect relationship on this phenomenon would require an extensive research paper on its own.
+however a true cause and effect relationship on this phenomenon would require a properly designed experiment to confirm.
 
-\subsection{Geospatial Visualisation}
+\textbf{Geospatial Visualisation:}
+While time series plots display variation in average trip distance over time, 
+they do not clearly convey the meaning of these differences.
+Figures~\ref{map:overall}, \ref{map:covid}, and \ref{map:flu} compares the average trip radius overall, 
+the average trip radius for the week with maximum COVID-19 cases per capita, 
+and the week with maximum Influenza cases per capita per pickup borough.
 
-While the above plots display variations in average trip distance over time, 
-it may be important to contextualise what these distances mean for each borough.
+
+\begin{figure}[H]
+
+    % this ensures your figures are centered where possible
+    \centering
+
+    % change the scale multiplier to make the figures smaller or larger
+    \includegraphics[width=0.45\textwidth]{../plots/map-avg-trip-distance-overall-pu_borough-MODIFIED.png}
+
+    \caption{Map of average trip distance over Timeline 2.} 
+    % refer to this image as (Figure 1)
+    \label{map:overall}
+\end{figure}
+
+% \pagebreak
+
+\begin{multicols}{2}
+    \begin{figure}[H]
+
+        % this ensures your figures are centered where possible
+        \centering
+    
+        % change the scale multiplier to make the figures smaller or larger
+        \includegraphics[width=0.45\textwidth]{../plots/map-avg-trip-distance-at-max-covid-by-pu_borough-MODIFIED.png}
+    
+        \caption{Map of weekly average trip distance following the maximum COVID-19 cases rate over Timeline 2.} % refer to this image as (Figure 1)
+        \label{map:covid}
+    \end{figure}
+    
+    \begin{figure}[H]
+    
+        % this ensures your figures are centered where possible
+        \centering
+    
+        % change the scale multiplier to make the figures smaller or larger
+        \includegraphics[width=0.45\textwidth]{../plots/map-avg-trip-distance-at-max-flu-by-pu_borough-MODIFIED.png}
+    
+        \caption{Map of weekly average trip distance following the maximum Influenza cases rate over Timeline 2.} % refer to this image as (Figure 1)
+        \label{map:flu}
+    \end{figure}    
+\end{multicols}
+
+At a first glance, Staten Island appears to experience the most change in trip distance during times of high case rates.
+While the initial expectation is that trip distances will decrease following weeks with many virus cases,
+the reliance on taxis starting in Staten Island also depends on the type of virus.
+Following maximum COVID-19 cases, the average trip radius is wider, 
+whereas following maximum Influenza cases, the average trip radius is more constricted.
+This suggests that there are different reactions to the prevalence of different viruses.
+An alternative explanation is that the Staten Island ferry may have been fully operational when the borough experienced its maximum Influenza case rate.
+
+The other boroughs do not vary as significantly in trip distance.
+This may be due to their proximity to each other.
+Another contributing factor could be the generally larger populations of these boroughs,
+meaning that a larger proportion of people are unlikely to change their taxi usage based on outside factors.
 
 
-\subsection{Linear Modelling}
+\textbf{Distributions:} 
 It is important to note that both average trip distances and passenger counts 
-are random variables with different properties, and therefore require different linear models.
+are random variables with different properties, and are therefore modelled using different distributions.
 Trip distances are a continuous metric, while passenger counts are discrete, but neither can be negative.
 This means that two different forms of linear model are used to model each measure.
 
+\begin{figure}[H]
+    % change the scale multiplier to make the figures smaller or larger
+    \includegraphics[width=0.40\textwidth]{../plots/histogram-Average Trip Distance-25-bins.png}
+    \includegraphics[width=0.38\textwidth]{../plots/histogram-Average Trip Passenger Count-20-bins.png}
+    % this ensures your figures are centered where possible
+    \centering
+    \caption{Probability density histogram of average trip distance (left) and average trip passenger count (right) over Timeline 2.} % refer to this image as (Figure 1)
+    \label{fig:hists}
+\end{figure}
+
+The selected reliance measures have different properties and distributions.
+While the passenger count represents a discrete measure, trip distance is measured on a continuous scale.
+The weekly average trip distances have an overall average of 
+
+\subsubsection{Modelling}
+
+\textbf{Weekly Average Trip Distance:}
+The weekly average trip distance is
 
 % \begin{enumerate} 
 %     \item Example for enumerated points
@@ -329,11 +426,17 @@ This report provides a brief, but thorough look at correlations to simple relian
 This has been a thorough, but brief look into correlations between viruses and reliance metrics.
 The following are several paths on which further research in this area could begin:
 \begin{itemize}
+    \item As mentioned in the paper, aggregation of TLC data performs grouping by pickup location.
+    This means the same analysis should also be performed on aggregation by dropoff location instead.
+    It would be interesting to compare and contrast the resulting models generated with this different grouping.
     \item There is the obvious path of modelling demand in the form of trip rates with respect to viral case rates. 
     \item It may be beneficial to begin generating models of repeated trips between the same locations,
     which could suggest patterns of use.
     \item Another way in which the research could be deepened would be to select a subset of specific locations where trips going to/from are likely work-related. 
     This would provide a window into measuring the shift to working from home caused by viruses.
+    \item It should also be considered that there are other taxi and transport datasets available.
+    A long-term goal of further research could be to model the effects of viruses on different modes of transport.
+    This could then be applied to improve on transport sectors where the correlations to case rates have a stronger apparent effect.
     \item Finally, the results generated in this report are far from conclusive or exhaustive.
     As data is collected over the years, more accurate models may be constructed. 
     While the focus may remain on modelling against COVID-19 and Influenza rates, 

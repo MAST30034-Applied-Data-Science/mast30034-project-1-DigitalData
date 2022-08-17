@@ -4,6 +4,7 @@ import matplotlib.dates as mdates
 import pandas as pd
 import geopandas as gpd
 import folium
+import numpy as np
 
 ALL_COLOURS = ['red', 'green', 'blue', 'orange', 'cyan', 'lime', 'magenta', 'yellow']
 BOROUGH_COLOURS = {
@@ -13,6 +14,36 @@ BOROUGH_COLOURS = {
     'Queens': 'orange',
     'Staten Island': 'blue'
 }
+
+def histogram(df: pd.DataFrame, xlabel: str = '', bins: int = 20,
+    logx: bool = False):
+
+    # create the subplot for the histogram
+    fig, ax = plt.subplots()
+
+    # apply logx if need
+    if logx:
+        df = np.log(df)
+
+    # plot the histogram
+    df.hist(ax=ax, bins = bins, density = True)
+
+    # set the x label of the histogram
+    if len(xlabel) != 0: 
+        ax.set_xlabel(xlabel)
+    if logx:
+        ax.set_xlabel(f'{ax.get_xlabel()} (Log Scale)')
+
+    # set the histogram's title correctly
+    ax.set_title(f'Histogram ({bins} Bins)')
+
+    # show and save the plot
+    plt.savefig(
+        f'../../plots/histogram-{ax.get_xlabel()}-{bins}-bins.png',
+        bbox_inches='tight',
+        dpi=300
+    )
+    plt.show()
 
 def time_series(df: pd.DataFrame, y: str, ylabel: str = '', logy:bool = False):
 
@@ -59,7 +90,7 @@ def time_series(df: pd.DataFrame, y: str, ylabel: str = '', logy:bool = False):
 
     # show and save the plot
     plt.savefig(
-        f'../plots/time-series-{ax.get_ylabel()}-vs-{ax.get_xlabel()}-by-{borough_col}.png',
+        f'../../plots/time-series-{ax.get_ylabel()}-vs-{ax.get_xlabel()}-by-{borough_col}.png',
         bbox_inches='tight',
         dpi=300
     )
@@ -108,7 +139,7 @@ def scatter(df:pd.DataFrame, x:str, y:str, xlabel:str = '', ylabel:str = '',
         ax.set_ylabel(f'{ax.get_ylabel()} (Log Scale)')
     
     # show and save the plot
-    plt.savefig(f'../plots/scatter-{ax.get_ylabel()}-vs-{ax.get_xlabel()}-by-{borough_col}.png',
+    plt.savefig(f'../../plots/scatter-{ax.get_ylabel()}-vs-{ax.get_xlabel()}-by-{borough_col}.png',
         dpi=300)
     plt.show()
 
@@ -116,8 +147,8 @@ def geospatial_distances_when_max(df: pd.DataFrame, borough_gj: gpd.GeoDataFrame
         max_col: str, virus_name: str, legend_name: str) -> folium.Map:
 
     #TODO: commenting geospatial_distances_when_max
-    # _map = folium.Map(location=[40.72, -73.94], tiles="Stamen Terrain", zoom_start=10)
-    _map = folium.Map(location=[40.72, -73.94], 
+    # _map = folium.Map(location=[40.66, -73.94], tiles="Stamen Terrain", zoom_start=10)
+    _map = folium.Map(location=[40.72, -74.20], 
         tiles="CartoDB PositronNoLabels", zoom_start=10)
 
     def miles_to_meters(miles: float)-> float:
@@ -184,13 +215,13 @@ def geospatial_distances_when_max(df: pd.DataFrame, borough_gj: gpd.GeoDataFrame
             )
         )
 
-    _map.save(f'../plots/map-avg-trip-distance-at-max-{virus_name}-by-{borough_col}.html')
+    _map.save(f'../../plots/map-avg-trip-distance-at-max-{virus_name}-by-{borough_col}.html')
 
     return _map
 
 def geospatial_average_distance(df: pd.DataFrame, borough_gj: gpd.GeoDataFrame) -> folium.Map:
     #TODO: commenting geospatial_average_distance
-    _map = folium.Map(location=[40.66, -73.94], 
+    _map = folium.Map(location=[40.72, -74.20], 
         tiles="CartoDB PositronNoLabels", zoom_start=10)
 
     def miles_to_meters(miles: float)-> float:
@@ -264,6 +295,6 @@ def geospatial_average_distance(df: pd.DataFrame, borough_gj: gpd.GeoDataFrame) 
             )
         )
 
-    _map.save(f'../plots/map-avg-trip-distance-overall-{borough_col}.html')
+    _map.save(f'../../plots/map-avg-trip-distance-overall-{borough_col}.html')
 
     return _map
