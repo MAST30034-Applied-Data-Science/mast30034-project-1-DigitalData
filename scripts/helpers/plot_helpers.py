@@ -1,3 +1,8 @@
+''' Provides functions for plotting data in different formats.
+
+Xavier Travers
+1178369
+'''
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
@@ -6,7 +11,7 @@ import geopandas as gpd
 import folium
 import numpy as np
 
-ALL_COLOURS = ['red', 'green', 'blue', 'orange', 'cyan', 'lime', 'magenta', 'yellow']
+# preset the plot colours for the boroughs
 BOROUGH_COLOURS = {
     'Bronx': 'red',
     'Brooklyn': 'cyan',
@@ -15,18 +20,28 @@ BOROUGH_COLOURS = {
     'Staten Island': 'blue'
 }
 
-def histogram(df: pd.DataFrame, xlabel: str = '', bins: int = 20,
-    logx: bool = False):
+def histogram(df: pd.DataFrame, x: str, xlabel: str = '', bins: int = 20,
+        logx: bool = False):
+    """ Plot a histogram to show the general distribution.
+
+    Args:
+        df (`pd.DataFrame`): The dataset to use.
+        x (str): The column to plot the distribution for.
+        xlabel (str, optional): The label to use for the x axis. Defaults to ''.
+        bins (int, optional): The number of bins. Defaults to 20.
+        logx (bool, optional): Whether to plot on a logarithmic scale. 
+            Defaults to False.
+    """
 
     # create the subplot for the histogram
     fig, ax = plt.subplots()
 
     # apply logx if need
     if logx:
-        df = np.log(df)
+        df[x] = np.log(df[x])
 
-    # plot the histogram
-    df.hist(ax=ax, bins = bins, density = True)
+    # plot the histogram on the selected x column
+    df[x].hist(ax=ax, bins = bins, density = True)
 
     # set the x label of the histogram
     if len(xlabel) != 0: 
@@ -46,6 +61,15 @@ def histogram(df: pd.DataFrame, xlabel: str = '', bins: int = 20,
     plt.show()
 
 def time_series(df: pd.DataFrame, y: str, ylabel: str = '', logy:bool = False):
+    """ Plot a time-series line plot to show changes over time.
+
+    Args:
+        df (`pd.DataFrame`): The dataset.
+        y (str): The value to plot vs time.
+        ylabel (str, optional): The label to set for the y axis. Defaults to ''.
+        logy (bool, optional): Whether to plot on a logarithmic scale. 
+            Defaults to False.
+    """
 
     # check which borough column is included
     borough_col = ''
@@ -64,7 +88,7 @@ def time_series(df: pd.DataFrame, y: str, ylabel: str = '', logy:bool = False):
     grouped_df = df.sort_values('week_ending_date').groupby(borough_col)
     for key, group in grouped_df:
 
-        # apply dates formatting
+        # apply date formatting
         # from: https://stackoverflow.com/questions/14946371/editing-the-date-formatting-of-x-axis-tick-labels-in-matplotlib
         ax.xaxis.set_major_locator(mdates.YearLocator(base = 1, month = 1, day = 1))
         ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
@@ -98,6 +122,17 @@ def time_series(df: pd.DataFrame, y: str, ylabel: str = '', logy:bool = False):
 
 def scatter(df:pd.DataFrame, x:str, y:str, xlabel:str = '', ylabel:str = '', 
         logx:bool = False, logy:bool = False):
+    """ Generate a scatter plot of two columns in a dataset.
+
+    Args:
+        df (`pd.DataFrame`): The dataset.
+        x (str): x column
+        y (str): y column
+        xlabel (str, optional): Label of x axis. Defaults to `''`.
+        ylabel (str, optional): Label of y axis. Defaults to `''`.
+        logx (bool, optional): Log scale x? Defaults to `False`.
+        logy (bool, optional): Log scale y? Defaults to `False`.
+    """
 
     # check which borough column is included
     borough_col = ''
@@ -107,15 +142,6 @@ def scatter(df:pd.DataFrame, x:str, y:str, xlabel:str = '', ylabel:str = '',
         borough_col = 'do_borough'
     else:
         borough_col = 'borough'
-
-    # determine colours by grouping
-    # all_markers = ['.', 'x', '+', '1', '*', 'p', 's']
-    colours = {}
-    modifier_index = 0
-    for group in set(df[borough_col]):
-        colours[group] = ALL_COLOURS[modifier_index]
-        # markers[group] = all_markers[modifier_index]
-        modifier_index += 1
 
     # iterate over the groups and plot their values
     fig, ax = plt.subplots()
@@ -145,9 +171,20 @@ def scatter(df:pd.DataFrame, x:str, y:str, xlabel:str = '', ylabel:str = '',
 
 def geospatial_distances_when_max(df: pd.DataFrame, borough_gj: gpd.GeoDataFrame, 
         max_col: str, virus_name: str, legend_name: str) -> folium.Map:
+    """ Generate a geospatial map of trip distances at the maximum of a viral case rate.
 
-    #TODO: commenting geospatial_distances_when_max
-    # _map = folium.Map(location=[40.66, -73.94], tiles="Stamen Terrain", zoom_start=10)
+    Args:
+        df (`pd.DataFrame`): The dataset
+        borough_gj (`gpd.GeoDataFrame`): The GeoJSON for borough polygons
+        max_col (str): The column to find the maximal value for.
+        virus_name (str): The name of the virus.
+        legend_name (str): What to put in the legend colormap.
+
+    Returns:
+        `folium.Map`: The map.
+    """
+
+    # Create the folium map
     _map = folium.Map(location=[40.72, -74.20], 
         tiles="CartoDB PositronNoLabels", zoom_start=10)
 
@@ -165,11 +202,14 @@ def geospatial_distances_when_max(df: pd.DataFrame, borough_gj: gpd.GeoDataFrame
     else:
         borough_col = 'borough'
 
+    # identify the max week for the max_col
     max_cases_idx = df.groupby([borough_col])[max_col]\
         .transform(max) == df[max_col]
 
+    # only keep values from the max week.
     df = df[max_cases_idx]
 
+    # add the borough outlines
     _map.add_child(folium.Choropleth(
         geo_data=borough_gj,
         name='borough layers',
@@ -181,6 +221,7 @@ def geospatial_distances_when_max(df: pd.DataFrame, borough_gj: gpd.GeoDataFrame
         legend_name=legend_name
     ))
 
+    # iterate through boroughs and add the borough names in a readable format.
     for borough, coord in borough_gj[['boro_name', 'centroid']].values:
         _map.add_child(folium.Marker(
                 location = coord,
@@ -202,30 +243,41 @@ def geospatial_distances_when_max(df: pd.DataFrame, borough_gj: gpd.GeoDataFrame
             )
         )
 
+    # iterate through boroughs and add the average trip distance/radius
+    # for the selected week
     for borough, coord in borough_gj[['boro_name', 'centroid']].values:
         borough_df = df[df[borough_col] == borough]
         _map.add_child(folium.Circle(
                 location = coord,
-                # tooltip = borough,
                 radius = miles_to_meters(borough_df['avg_trip_distance'].values[0]),
-                # fill_color=ph.ALL_COLOURS[colour_index],
-                # fill_opacity=1,
                 weight=1.5,
                 color='black',
             )
         )
 
+    # save the map and return it (which allows it to be shown from a `.ipynb`)
     _map.save(f'../../plots/map-avg-trip-distance-at-max-{virus_name}-by-{borough_col}.html')
-
     return _map
 
-def geospatial_average_distance(df: pd.DataFrame, borough_gj: gpd.GeoDataFrame) -> folium.Map:
-    #TODO: commenting geospatial_average_distance
+def geospatial_average_distance(df: pd.DataFrame, 
+        borough_gj: gpd.GeoDataFrame) -> folium.Map:
+    """ Generate a geospatial map of average trip distances over the timeline.
+
+    Args:
+        df (`pd.DataFrame`): The dataset
+        borough_gj (`gpd.GeoDataFrame`): The GeoJSON for borough polygons
+
+    Returns:
+        `folium.Map`: The map.
+    """
+
+    # Create the folium map
     _map = folium.Map(location=[40.72, -74.20], 
         tiles="CartoDB PositronNoLabels", zoom_start=10)
 
     def miles_to_meters(miles: float)-> float:
-        # from google
+        """ Convert Miles to Meters """
+        # This value comes from a google search.
         METERS_IN_A_MILE = 1609.34
         return miles * METERS_IN_A_MILE
 
@@ -238,16 +290,10 @@ def geospatial_average_distance(df: pd.DataFrame, borough_gj: gpd.GeoDataFrame) 
     else:
         borough_col = 'borough'
 
-    # _map.add_child(folium.Choropleth(
-    #     geo_data=borough_gj,
-    #     name='borough layers',
-    #     fill_opacity=0.75,
-    #     fill_color= 'cadetblue'
-    #     # fill_color='#feb24c'
-    # ))
-
+    # iterate through the boroughs
     for borough, geom, coord in borough_gj[['boro_name', 'geometry', 'centroid']].values:
 
+        # add the borough outlines
         _map.add_child(folium.Choropleth(
             geo_data=geom,
             name='borough layers',
@@ -256,6 +302,7 @@ def geospatial_average_distance(df: pd.DataFrame, borough_gj: gpd.GeoDataFrame) 
             # fill_color='#feb24c'
         ))
 
+        # add the borough names in a readable format.
         _map.add_child(folium.Marker(
                 location = coord,
                 icon = folium.DivIcon(
@@ -275,8 +322,10 @@ def geospatial_average_distance(df: pd.DataFrame, borough_gj: gpd.GeoDataFrame) 
             )
         )
 
+    # iterate through boroughs and add the overall average trip distance/radius
     for borough, coord in borough_gj[['boro_name', 'centroid']].values:
         
+        # calculate the borough's overall average trip distance
         total_distance = sum(
             df.loc[df[borough_col] == borough, 'avg_trip_distance'] *
             df.loc[df[borough_col] == borough, 'num_trips']
@@ -286,15 +335,12 @@ def geospatial_average_distance(df: pd.DataFrame, borough_gj: gpd.GeoDataFrame) 
 
         _map.add_child(folium.Circle(
                 location = coord,
-                # tooltip = borough,
                 radius = miles_to_meters(average_distance),
-                # fill_color=ph.ALL_COLOURS[colour_index],
-                # fill_opacity=1,
                 weight=1.5,
                 color='black',
             )
         )
 
+    # save the map and return it (which allows it to be shown from a `.ipynb`)
     _map.save(f'../../plots/map-avg-trip-distance-overall-{borough_col}.html')
-
     return _map

@@ -1,13 +1,27 @@
-from pyspark.sql import DataFrame, Column, SparkSession
-from pyspark.sql.types import IntegerType
+''' Provides functions for joining datasets vertically or horizontally.
+
+Xavier Travers
+1178369
+'''
+from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql import functions as F
 import os
 
 def join_by_week_by_borough(tlc_df: DataFrame, viral_df: DataFrame, 
         virus_name: str) -> DataFrame:
-    # I will always be joining the tlc data with 
-    # the viral data from the previous week 
-    # (since the previous week assumedly dictates next week's choices)
+    """ Join a TLC dataset with a viral dataset by borough and week.
+    I will always be joining the tlc data with 
+    the viral data from the previous week 
+    (since the previous week assumedly dictates next week's choices).
+
+    Args:
+        tlc_df (`DataFrame`): The TLC dataset to join
+        viral_df (`DataFrame`): The viral dataset to join
+        virus_name (str): The name of the virus (used for prefixes)
+
+    Returns:
+        `DataFrame`: The joined dataset
+    """
 
     # check which borough column is included
     borough_col = ''
@@ -25,21 +39,28 @@ def join_by_week_by_borough(tlc_df: DataFrame, viral_df: DataFrame,
                 F.col(colname).alias(f'{virus_name}_{colname}')
                 for colname in viral_df.columns
             ],
-            # F.col('borough').alias(f'{virus_name}_borough'),
-            # F.col('week_index').alias(f'{virus_name}_prev_week_index'),
-            # F.col('tot_cases').alias(f'{virus_name}_tot_cases'), 
-            # F.col('daily_avg_cases').alias(f'{virus_name}_daily_avg_cases')
         ),
         on = [
             (F.col(borough_col) == F.col(f'{virus_name}_borough')),
             (F.col('week_index') == (F.col(f'{virus_name}_week_index') + 1))
-        ],
+        ], # I want values rows without viral data to be null/zero valued.
         how = 'leftouter'
-    )
+    ).fillna(0) # also impute zero values where viral data is null/not there
+    # this specifically applies for the flu dataset, which is seasonal.
 
 
 def read_stacked_tlc_df(spark:SparkSession, 
         location:str = '../../data/raw/tlc/yellow') -> DataFrame:
+    """ Read and stack the months of a TLC dataset.
+
+    Args:
+        spark (`SparkSession`): Used to read the datasets.
+        location (str, optional): The location/type of the dataset. 
+            Defaults to '../../data/raw/tlc/yellow'.
+
+    Returns:
+        `DataFrame`: The stacked dataset
+    """
 
     stacked_df = None
 
@@ -49,6 +70,7 @@ def read_stacked_tlc_df(spark:SparkSession,
         # read the parquet in
         tlc_df = spark.read.parquet(f'{location}/{filename}')
 
+        # stack the data using union
         if stacked_df == None:
             stacked_df = tlc_df
         else:

@@ -4,7 +4,6 @@ Created with reference to the `Python_PreReq_Notebook.ipynb` provided.
 Xavier Travers
 1178369
 '''
-import itertools
 from urllib.request import urlretrieve
 import os
 import time
