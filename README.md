@@ -23,7 +23,7 @@ This is an example `README.md` for students to use. **Please change this to your
 
 ## Research Goal 
 To determine the effects that the virus case rates (COVID-19 and Influenza) have on the distance of trips 
-in New York yellow taxis.
+in New York yellow taxis per borough per week.
 
 
 ## Timeline
