@@ -9,7 +9,17 @@ echo
 echo "Running scripts/downloads.py"
 python3 ./scripts/download.py
 
-# Run the generateing MMWR weeks script
+# Run the generating MMWR weeks script
 echo
 echo "Running scripts/generate_mmwr_weeks.py"
 python3 ./scripts/generate_mmwr_weeks.py
+
+# Run the python cleaning script
+echo
+echo "Running scripts/clean.py"
+python3 ./scripts/clean.py
+
+# Run the python aggregation script
+echo
+echo "Running scripts/aggregate.py"
+python3 ./scripts/aggregate.py

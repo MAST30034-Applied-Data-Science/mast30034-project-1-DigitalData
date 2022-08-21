@@ -35,11 +35,10 @@ TLC_DATES = { # the necessary dates for analysis
     # and at the end. This is because the final data is grouped by mmwr weeks, 
     # which do not align with months perfectly 
     # (some weeks contain days from 2 different months).
-
-    2018: range(6,13),
-    2019: range(1,13),
-    2020: range(1,13), # Timeline 2 starts here
-    2021: range(1,8),
+    2019: range(12, 13),
+    2020: range(1, 13),
+    2021: range(1, 13),
+    2022: range(1, 2)
 }
 
 # iterate through tlc types to download

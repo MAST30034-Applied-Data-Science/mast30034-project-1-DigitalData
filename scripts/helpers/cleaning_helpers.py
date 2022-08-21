@@ -75,16 +75,35 @@ def extract_mmwr_week(df: DataFrame, mmwr_weeks_df: DataFrame) -> DataFrame:
 
     colnames = df.columns
 
+    # check which borough column is included
+    borough_col = ''
+    if 'pu_borough' in colnames:
+        borough_col = 'pu_borough'
+    elif 'do_borough' in colnames:
+        borough_col = 'do_borough'
+    elif 'borough' in colnames:
+        borough_col = 'borough'
+    else: 
+        borough_col = 'boro'
+
+    # columns to join to mmwr with 
+    join_on = ['day', 'month', 'year']
+
+    if borough_col is not 'boro':
+        join_on += [borough_col]
+
     return df\
         .join(
-            mmwr_weeks_df,
-            on=['day', 'month', 'year'],
-            how='inner'
+            mmwr_weeks_df.withColumnRenamed('borough', borough_col),
+            on=join_on,
+            # this is done so that viral data can be set to 0 on "quiet" weeks
+            how='right_outer'
         )\
         .select(
-            ['week_ending', 'week_year', 'week_month', 'week_index', 'timeline'] 
+            ['week_ending', 'week_year', 'week_month', 'week_index'] 
             + colnames
-        )
+        )\
+        .fillna(0)
 
 def extract_date_columns(df: DataFrame, mmwr_weeks_df:DataFrame, 
         date_col: str = 'date') -> DataFrame:
@@ -125,7 +144,7 @@ def extract_date_columns(df: DataFrame, mmwr_weeks_df:DataFrame,
     return df\
         .select(
             ['year', 'month', 'day', 'week_ending', 'week_year', 'week_month',
-                'week_index', 'timeline'] + colnames
+                'week_index'] + colnames
         )
 
 def perform_cleaning(df: DataFrame, mmwr_weeks_df: DataFrame,

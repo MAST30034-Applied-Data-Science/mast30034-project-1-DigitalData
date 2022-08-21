@@ -53,7 +53,7 @@ def in_right_year(w: list, y:int) -> bool:
 mmwr_weeks = []
 
 # year of start of visualization window
-start_year = 2018
+start_year = 2020
 end_year = 2021
 
 # this is done using a python calendar
@@ -115,39 +115,25 @@ for year in range(start_year, end_year + 1):
 # generate a dataframe from the mmwr list of dictionaries
 df = pd.DataFrame(mmwr_weeks)
 
-# define the two timelines of analysis ('pre' vs 'post')
-df['timeline'] = 0
+# stack the dataset for each borough (used to force zero values with viral data)
+temp_df = None
+for borough in ['Bronx', 'Brooklyn', 'Manhattan', 'Queens', 'Staten Island']:
+    df['borough'] = borough
+    if temp_df is None:
+        temp_df = df.copy()
+    else:
+        temp_df = pd.concat(
+            [temp_df, df]
+        )
 
-def set_timeline(t_year: int, t_month: int, timeline: int, duration: int = 12):
-    """ Sets a specific timeline given a starting month and month length.
-
-    Args:
-        t_year (int): initial year
-        t_month (int): initial month
-        timeline (int): the index of the timeline
-        duration (int, optional): how long it is in months. Defaults to 12.
-    """
-    for i in range(1, duration + 1):
-        df.loc[
-            lambda sdf: (sdf['week_year'] == t_year) 
-                        & (sdf['week_month'] == t_month), 
-            ['timeline']
-        ] = timeline
-
-        t_month += 1
-        if t_month > 12:
-            t_year += 1
-            t_month = 1
-
-# set the selected timelines (used for filtering later)
-set_timeline(2018, 7, 2, 24)
-set_timeline(2020, 7, 1)
+# set the df to the stacked data
+df = temp_df
 
 # some debug display for feedback
 # also shows that the script worked
 print('GENERATED MMWR WEEKS TABLE')
 print('PRINTING EVERY 50TH ROWS')
-print(df.iloc[::50, :].head(df.size))
+print(df.sort_values(['week_index', 'us_format']).iloc[::1, :].head(df.size))
 
 # define the path
 def mmwr_path(folder: str):

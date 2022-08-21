@@ -10,6 +10,9 @@ import pandas as pd
 import geopandas as gpd
 import folium
 import numpy as np
+import statsmodels.api as sm
+from statsmodels.base.wrapper import ResultsWrapper
+from statsmodels.graphics.api import abline_plot
 
 # preset the plot colours for the boroughs
 BOROUGH_COLOURS = {
@@ -48,6 +51,9 @@ def histogram(df: pd.DataFrame, x: str, xlabel: str = '', bins: int = 20,
         ax.set_xlabel(xlabel)
     if logx:
         ax.set_xlabel(f'{ax.get_xlabel()} (Log Scale)')
+
+    # set the y axis label
+    ax.set_ylabel('Density')
 
     # set the histogram's title correctly
     ax.set_title(f'Histogram ({bins} Bins)')
@@ -344,3 +350,41 @@ def geospatial_average_distance(df: pd.DataFrame,
     # save the map and return it (which allows it to be shown from a `.ipynb`)
     _map.save(f'../../plots/map-avg-trip-distance-overall-{borough_col}.html')
     return _map
+
+
+def diagnostic_observed_fitted(df: pd.DataFrame, model: ResultsWrapper, 
+    colname: str, label: str):
+    """ Generate a plot to compare the fitted and observed values 
+    of a linear model/
+
+    Args:
+        df (`pd.DataFrame`): Dataset the model is built on
+        model (`ResultsWrapper`): The model fit
+        colname (str): Name of the column that we're analysing in df
+        label (str): Name of the variable as it appears in x and y axes
+    """
+
+    # create the plots themselves
+    fig, ax = plt.subplots()
+    ax.scatter(
+        model.predict(), 
+        df[colname].iloc[model.fittedvalues.index]
+    )
+    line_fit = sm.OLS(
+        df[colname].iloc[model.fittedvalues.index], 
+        sm.add_constant(model.predict(), prepend=True)
+    ).fit()
+    abline_plot(model_results=line_fit, ax=ax)
+
+    # set labels
+    ax.set_title('Model Fit Plot')
+    ax.set_ylabel(f'Observed {label}')
+    ax.set_xlabel(f'Fitted {label}');
+
+    # show and save the plot
+    plt.savefig(
+        f'../../plots/diagnostic-{type(model.model).__name__}-{ax.get_ylabel()}-vs-{ax.get_xlabel()}.png',
+        bbox_inches='tight',
+        dpi=300
+    )
+    plt.show()
