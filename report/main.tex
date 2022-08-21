@@ -32,7 +32,7 @@ Student ID: 1178369 \\
 %% Replace the link with your github repo
 % 1. Remember to escape underscore in the link.
 % 2. Remember to include the commit you want to submit in the link
-\href{https://github.com/MAST30034-Applied-Data-Science/mast30034-project-1-DigitalData/tree/73fc44bfcdec9cc3126766ad61aef7a5f8999798}{Github Repository}
+\href{https://github.com/MAST30034-Applied-Data-Science/mast30034-project-1-DigitalData/tree/928e6d823c9c3953e2ae98ef8f2f9a46403a3a0c}{Github Repository}
 }
 
 \begin{document}
@@ -75,7 +75,7 @@ Data from before 2020 is not included to reduce code runtime when generating vis
 %     This 36-month timeline is used exclusively for time-series plots.
 % \end{itemize}
 \subsection{Datasets}
-The New York City Taxi and Limousine Commission (TLC) provides a dataset of taxi service trips that captures information such as type of taxi, travel distance, general pickup/dropoff locations/times and other trip data \cite{tlcdataset}. 
+The New York City Taxi and Limousine Commission (TLC) provides a dataset of taxi service trips that captures information such as type of taxi, travel distance, general pick-up/drop-off locations/times and other trip data \cite{tlcdataset}. 
 In this report, the focus is placed on New York's Yellow street hail taxis.
 The subset of this data denoted by the timeline contains $64'913'648$ trips and $19$ features per trip before cleaning.
 Also included from the same source is a mapping dataset for $265$ pick-up/drop-off locations and corresponding boroughs included in the TLC dataset \cite{tlcdataset}.
@@ -154,16 +154,16 @@ and Brooklyn, also called Kings County \cite{countytoborough}.
         \item Derive trip duration (in hours) and trip speed (in MPH) columns. 
         Filter out illegal (and likely incorrect) trip entries with a speed greater than 65 MPH, 
         as per New York State law \cite{laws}.
-        \item Discard all columns except the pickup time, trip distance, and pickup location ID.
-        \item For each entry, find the associated pickup borough. 
-        Discard all rows where pickup is not within the 5 boroughs.
+        \item Discard all columns except the pick-up time, trip distance, and pick-up location ID.
+        \item For each entry, find the associated pick-up borough. 
+        Discard all rows where pick-up is not within the 5 boroughs.
         \item Discard rows with null values in the above columns or where there is negative distance.
         \item Derive the MMWR week associated to each trip entry, as well as the year and month that the majority of the week participates in.
         Discard all rows where the MMWR week is not within Timeline 1.
     \end{enumerate}
 % \end{multicols}
 Since only the trip distance is of concern in this report,
-filtering on other columns is not deemed necessary as long as the entries for trip distance and pickup borough are consistent and valid.
+filtering on other columns is not deemed necessary as long as the entries for trip distance and pick-up borough are consistent and valid.
 
 \textbf{COVID-19 and Influenza Datasets:}
 These datasets are very simple, and therefore require very little preprocessing.
@@ -176,16 +176,16 @@ counties are converted to their associated borough names for homogeneity of data
 \subsubsection{Aggregation}
 
 \textbf{TLC Dataset:}
-This dataset is aggregates by MMWR week and pickup borough.
-This allows for a granular look at potential pattern differences between the reliance measures grouped by pickup locations.
+This dataset is aggregates by MMWR week and pick-up borough.
+This allows for a granular look at potential pattern differences between the reliance measures grouped by pick-up locations.
 The aggregated set is then joined by MMWR year and borough to the corresponding population estimate.
 For the groupings described above, the number of trips,
 the average trip distance and passenger count is calculated.
 This aggregation over Timeline 1 results in approximately $52$ rows per borough.
 
-This report only performs grouping by pickup location,
+This report only performs grouping by pick-up location,
 allowing models to reflect a potential taxi customer's perspective on their immediate surroundings before taking a trip.
-However, exploration of differences between grouping by pickup or dropoff location on the results of models 
+However, exploration of differences between grouping by pick-up or drop-off location on the results of models 
 is a recommended extension to this research.
 
 \textbf{COVID-19 and Influenza Datasets:}
@@ -213,7 +213,7 @@ and describes the models generated for passenger counts and trip distances.
 
     \textbf{Time-Series Analysis:}
     Shown in Figure~\ref{fig:ts} is the change in average trip distance over time. Interestingly, 
-    while most boroughs (pickup or dropoff) experience a slump in average trip distance following the "COVID dip", 
+    while most boroughs (pick-up or drop-off) experience a slump in average trip distance following the "COVID dip", 
     Staten Island appears to recover from the effects, and even increase in average trip distance
     during the COVID-19 pandemic.
 
@@ -229,7 +229,7 @@ many jobs are likely located in Manhattan.
 
     % change the scale multiplier to make the figures smaller or larger
     \includegraphics[width=0.57\textwidth]{../plots/time-series-Average Trip Distance-vs-MMWR Weeks (End Dates)-by-pu_borough.png}
-    \caption{How average trip distances per week per pickup borough vary over time.} % refer to this image as (Figure 1)
+    \caption{How average trip distances per week per pick-up borough vary over time.} % refer to this image as (Figure 1)
 
     % \includegraphics[width=0.45\textwidth]{../plots/time-series-Average Trip Distance-vs-MMWR Weeks (End Dates)-by-do_borough.png}
     % this ensures your figures are centered where possible
@@ -268,7 +268,7 @@ Both datasets have spikes of case rates, but COVID-19 experiences a significant 
 
 % \begin{wrapfigure}{r}{8cm}
 %     % change the scale multiplier to make the figures smaller or larger
-%     \caption{How average trip distances per week per pickup borough vary over time.} % refer to this image as (Figure 1)
+%     \caption{How average trip distances per week per pick-up borough vary over time.} % refer to this image as (Figure 1)
 %     \includegraphics[width=0.55\textwidth]{../plots/time-series-Average Trip Distance-vs-MMWR Weeks (End Dates)-by-pu_borough.png}
 
 %     % \includegraphics[width=0.45\textwidth]{../plots/time-series-Average Trip Distance-vs-MMWR Weeks (End Dates)-by-do_borough.png}
@@ -285,7 +285,7 @@ Both datasets have spikes of case rates, but COVID-19 experiences a significant 
 %     % \includegraphics[width=0.45\textwidth]{../plots/time-series-Average Trip Distance-vs-MMWR Weeks (End Dates)-by-do_borough.png}
 %     % this ensures your figures are centered where possible
 %     \centering
-%     \caption{How average trip distances per week per pickup borough vary over time.} % refer to this image as (Figure 1)
+%     \caption{How average trip distances per week per pick-up borough vary over time.} % refer to this image as (Figure 1)
 %     \label{fig:ts}
 % \end{wrapfigure}
 
@@ -311,7 +311,7 @@ Both datasets have spikes of case rates, but COVID-19 experiences a significant 
 %     \includegraphics[width=0.45\textwidth]{../plots/time-series-Average Passengers Per Trip-vs-MMWR Weeks (End Dates)-by-do_borough.png}
 %     % this ensures your figures are centered where possible
 %     \centering
-%     \caption{How average passenger count per week per pickup (left) and dropoff (right) borough vary over time.} % refer to this image as (Figure 1)
+%     \caption{How average passenger count per week per pick-up (left) and drop-off (right) borough vary over time.} % refer to this image as (Figure 1)
 %     \label{fig:ts-pass-count-weeks}
 % \end{figure}
 
@@ -322,7 +322,7 @@ Both datasets have spikes of case rates, but COVID-19 experiences a significant 
 %     % \includegraphics[width=0.45\textwidth]{../plots/time-series-Average Passengers Per Trip-vs-MMWR Weeks (End Dates)-by-do_borough.png}
 %     % this ensures your figures are centered where possible
 %     \centering
-%     \caption{How average passenger counts per week per pickup borough vary over time.} % refer to this image as (Figure 1)
+%     \caption{How average passenger counts per week per pick-up borough vary over time.} % refer to this image as (Figure 1)
 %     \label{fig:ts-pass-count-weeks}
 % \end{figure}
 
@@ -336,7 +336,7 @@ While time series plots display variation in average trip distance over time,
 they do not clearly convey the meaning of these differences.
 Figures~\ref{map:overall} and \ref{maps} compares the average trip radius overall, 
 the average trip radius for the week with maximum COVID-19 cases per capita, 
-and the week with maximum Influenza cases per capita per pickup borough.
+and the week with maximum Influenza cases per capita per pick-up borough.
 
 
 
@@ -521,7 +521,7 @@ Instead, the model is analyzed using ANOVA testing and a comparison of fitted an
     This suggests the need for further investigation into the type of relationship which is present.
     The Gaussian model yields an adjusted $R^2$ of $0.972$, which is generally quite high.
     A measure to consider for comparison to the next is the log-likelihood of the linear regression,
-    which is $-865.8$.
+    which is $-865.9$.
 
 \textbf{Gamma Regression:}
 Continuous data with bounds that measures duration can often be accurately modelled using a generalized linear model in the gamma family.
@@ -661,8 +661,8 @@ There are several paths for further research based on this report.
 First, consider other datasets which merit inclusion
 in this analysis, such as other virus case rates, or other forms of transport.
 With more data to analyze, a clearer picture of the true relationships between infectious disease and preceived need for transport services.
-As mentioned in the paper, the TLC data is aggregated by pickup location.
-    The same analysis should also be performed on aggregation by dropoff location.
+As mentioned in the paper, the TLC data is aggregated by pick-up location.
+    The same analysis should also be performed on aggregation by drop-off location.
     There may be value in comparing and contrasting the resulting models with this different grouping.
 Finally, specifically select a subset of specific locations where trips going to/from are likely work-related. 
 This would provide a window into measuring the shift to working from home caused by viruses.
