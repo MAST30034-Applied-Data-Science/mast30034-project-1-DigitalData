@@ -23,7 +23,8 @@ This is an example `README.md` for students to use. **Please change this to your
 
 ****
 ## Research Goal 
-To determine the effects that the virus case rates (COVID-19 and Influenza) have on the frequency and distance of trips among different taxi services in New York.
+To determine the effects that the virus case rates (COVID-19 and Influenza) have on the distance of trips 
+in New York yellow taxis.
 
 ****
 ## Timeline
