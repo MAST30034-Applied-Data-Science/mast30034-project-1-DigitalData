@@ -21,16 +21,15 @@ Remember, we will be reading through and running your code, so it is in _your be
 ## README example
 This is an example `README.md` for students to use. **Please change this to your requirements**. -->
 
-****
 ## Research Goal 
 To determine the effects that the virus case rates (COVID-19 and Influenza) have on the distance of trips 
 in New York yellow taxis.
 
-****
+
 ## Timeline
 The timeline for the research area is starting January 2020 and ending December 2021 (See [the report](https://github.com/MAST30034-Applied-Data-Science/mast30034-project-1-DigitalData/blob/main/report/main.pdf) for justification).
 
-****
+
 ## Pipeline
 
 <!-- ### - The Intended Way
@@ -68,12 +67,12 @@ python3 ./scripts/generate_mmwr_weeks.py
     - `notebooks/data_analysis/data_analysis_distance_modelling.ipynb`: Generates the linear models of trip distances.
     - `notebooks/data_analysis/data_analysis_trip_rates_vs_time.ipynb`: Plots the trip rates over time. *This is not used in the report.*
 
-****
+
 ## Python Scripts
 There are several scripts located in the `scripts` folder.
 These have enough commenting to not need a breakdown of each here.
 
-****
+
 ## Main Python Modules
 These are used throughout the code and should be installed before running.
 For a more detailed snapshot of the modules I have installed when running my code,
@@ -86,7 +85,6 @@ see the `requirements.txt`.
 - `folium`
 - `numpy`
 
-****
 
 <!-- 2. `preprocess.ipynb`: This notebook details all preprocessing steps and outputs it to the `data/curated` directory.
 3. `analysis.ipynb`: This notebook is used to conduct analysis on the curated data.
