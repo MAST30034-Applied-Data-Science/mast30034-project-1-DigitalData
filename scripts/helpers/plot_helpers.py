@@ -13,6 +13,7 @@ import numpy as np
 import statsmodels.api as sm
 from statsmodels.base.wrapper import ResultsWrapper
 from statsmodels.graphics.api import abline_plot
+import os
 
 # preset the plot colours for the boroughs
 BOROUGH_COLOURS = {
@@ -377,7 +378,7 @@ def diagnostic_observed_fitted(df: pd.DataFrame, model: ResultsWrapper,
     abline_plot(model_results=line_fit, ax=ax)
 
     # set labels
-    ax.set_title('Model Fit Plot')
+    ax.set_title(f'{type(model.model).__name__.upper()} Model Observed versus Fitted')
     ax.set_ylabel(f'Observed {label}')
     ax.set_xlabel(f'Fitted {label}');
 

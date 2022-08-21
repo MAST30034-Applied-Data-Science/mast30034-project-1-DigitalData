@@ -21,13 +21,30 @@ Remember, we will be reading through and running your code, so it is in _your be
 ## README example
 This is an example `README.md` for students to use. **Please change this to your requirements**. -->
 
+****
 ## Research Goal 
 To determine the effects that the virus case rates (COVID-19 and Influenza) have on the frequency and distance of trips among different taxi services in New York.
 
-## TODO: Timeline
-The timeline for the research area is starting July 2019 and ending December 2021 (See [the report](https://github.com/MAST30034-Applied-Data-Science/mast30034-project-1-DigitalData/blob/main/report/main.pdf) for justification).
+****
+## Timeline
+The timeline for the research area is starting January 2020 and ending December 2021 (See [the report](https://github.com/MAST30034-Applied-Data-Science/mast30034-project-1-DigitalData/blob/main/report/main.pdf) for justification).
 
+****
 ## Pipeline
+
+<!-- ### - The Intended Way
+I would love it if this works on your end.
+I unfortunately cannot guarrantee it will.
+This is quite new and I haven't had that much time to test it.
+*Run this bash script from the repository's root directory (__do not__ `cd` into the `scripts` folder).*
+```
+./pipeline.sh
+```
+This script should run the whole data pipeline start to finish.
+This script should generate all the plots necessary, except for the `.png` files for the maps.
+Map images in the report are screenshots of the maps that this script generates.
+
+### - Alternative: The Long Way -->
 *Run all the scripts from the repository's root directory (__do not__ `cd` into the `scripts` folder).*
 
 1. `download.py`: Downloads the raw data into the `data/raw` directory. Run with
@@ -40,23 +57,35 @@ python3 ./scripts/download.py
 ```
 python3 ./scripts/generate_mmwr_weeks.py
 ```
-3. `preprocessing_part_2_cleaning.ipynb`: Cleans the dataset (removes rows containing `null` and negative values where necessary).
-4. `preprocessing_part_3_aggregation.ipynb`: Groups the datasets by month, year, taxi type, shared-ride status (which is a passenger count for green/yellow taxis and a boolean value for high frequency taxi services).
-5. The data analysis notebooks: These can be explored in any order (since they do not change data, only generating plots). TODO: This
-    - `data_analysis_tlc.ipynb`: Performs analysis on the TLC dataset (distributions of selected columns, for example) with different groupings/filters.
-    - `data_analysis_covid.ipynb`: Performs analysis on the COVID dataset (distributions of selected columns, for example) with different groupings/filters.
-    - TODO: `data_analysis_yellow_vs_covid.ipynb`:
-    - TODO: `data_analysis_fhvhv_vs_covid.ipynb`:
+3. `notebooks/preprocessing/preprocessing_part_1_cleaning.ipynb`: Cleans the dataset (removes rows containing `null` and negative values where necessary).
+4. `notebooks/preprocessing/preprocessing_part_2_aggregation.ipynb`: Groups the datasets by MMWR week and pick-up borough.
+5. The data analysis notebooks: These can be explored in any order (since they do not change data, only generating plots).
+    - `notebooks/data_analysis/data_analysis_distance_distribution.ipynb`: Related to finding the distribution of trip distances.
+    - `notebooks/data_analysis/data_analysis_distance_vs_time.ipynb`: Plots the trip distances over time.
+    - `notebooks/data_analysis/data_analysis_geospatial_distance_mapping.ipynb`: Maps the average trip radii per borough.
+    - `notebooks/data_analysis/data_analysis_viral_cases_vs_time.ipynb`: Plots the viral case rates over time.
+    - `notebooks/data_analysis/data_analysis_distance_modelling.ipynb`: Generates the linear models of trip distances.
+    - `notebooks/data_analysis/data_analysis_trip_rates_vs_time.ipynb`: Plots the trip rates over time. *This is not used in the report.*
 
-- `raw_data_analysis.ipynb`: A sandbox notebook (not necessary in the pipeline). Contains surface level analysis (data types, length, potential missing values, outliers) of the raw data where necessary. The results from this are used throughout the report.
+****
+## Python Scripts
+There are several scripts located in the `scripts` folder.
+These have enough commenting to not need a breakdown of each here.
 
-## TODO: Technology Stack
-- [Apache Spark](https://pypi.org/project/pyspark/)
-- [Pandas](https://pandas.pydata.org/)
-- [scikit-learn](https://scikit-learn.org/stable/)
-- [Numpy](https://pypi.org/project/numpy/) (probably)
+****
+## Main Python Modules
+These are used throughout the code and should be installed before running.
+For a more detailed snapshot of the modules I have installed when running my code,
+see the `requirements.txt`.
+- `pyspark`
+- `pandas`
+- `matplotlib`
+- `statsmodels`
+- `geopandas`
+- `folium`
+- `numpy`
 
-<!-- **** -->
+****
 
 <!-- 2. `preprocess.ipynb`: This notebook details all preprocessing steps and outputs it to the `data/curated` directory.
 3. `analysis.ipynb`: This notebook is used to conduct analysis on the curated data.

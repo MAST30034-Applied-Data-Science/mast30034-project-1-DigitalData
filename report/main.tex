@@ -48,10 +48,10 @@ it is natural to assume that many people-facing industries are no longer relied 
 To what extent is such an assumption true?
 This report investigates possible correlations between a measure of reliance on taxi services, and virus case rates.
 While most research is satisfied with measuring correlations with demand in the form of usage frequency, 
-the focus for this report is placed on a measurement which reflects reliance (or trust) more than demand.
+the focus for this report is placed on a measurement that is more reflective of reliance (or trust).
 
 Specific to taxi services, a key measurement of reliance is average travel radius/distance.
-This measurement will correlate with the level of trust the average person places in a taxi service over alternatives.
+This research is performed under the assumption that this measurement will correlate with the level of trust the average person places in a taxi service over alternatives.
 For example, one may trust a taxi to travel further distances than the local tram.
 Detailed throughout this report are steps taken to model average weekly trip distances against
 the case rates of two prominent viruses: COVID-19 and Influenza.
@@ -60,7 +60,7 @@ the case rates of two prominent viruses: COVID-19 and Influenza.
 This report focuses on a single 24-month timeline starting in January 2020 and ending in December 2021.
 Such a large timeline allows for aggregation on a per week basis to yield a large aggregate dataset.
 It also includes a snippet of time before the COVID-19 pandemic for analysis.
-Data from 2022 is not included, as many of the datasets would be incomplete or unchecked.
+Data from 2022 is not included to avoid any risk of using data that is so new that it is incomplete or hasn't been double-checked.
 Data from before 2020 is not included to reduce code runtime when generating visualizations.
 % Throughout this report, two timelines are used.
 % \begin{itemize}
@@ -75,27 +75,40 @@ Data from before 2020 is not included to reduce code runtime when generating vis
 %     This 36-month timeline is used exclusively for time-series plots.
 % \end{itemize}
 \subsection{Datasets}
-\begin{itemize}
-    \item The New York City Taxi and Limousine Commission (TLC) provides a dataset of taxi service trips which captures information such as type of taxi, travel distance, general pickup/dropoff locations/times and other trip data \cite{tlcdataset}. 
+The New York City Taxi and Limousine Commission (TLC) provides a dataset of taxi service trips that captures information such as type of taxi, travel distance, general pickup/dropoff locations/times and other trip data \cite{tlcdataset}. 
 In this report, the focus is placed on New York's Yellow street hail taxis.
-Also included from the same source is a mapping dataset for pickup/dropoff locations and corresponding boroughs included in the TLC dataset \cite{tlcdataset}.
-    \item Influenza case rates are recorded on a weekly basis by the New York Department of Health \cite{fludataset}. 
-Case rates in this dataset are dated based on Morbidity and Mortality Weekly Report (MMWR) weeks, which are generated using rules defined by the CDC \cite{mmwr}.
-Each entry in this dataset contains an MMWR week, county (within the state of New York), type of Influenza (A, B or unspecified), and case count.
-    \item COVID-19 case rates have been recorded daily by the New York Department of Health and Mental Hygiene \cite{coviddataset}.
-This dataset begins on the last day of february, when the first official cases of COVID-19 were recorded in New York City. 
-Each entry in this data set contains a date and several of the daily COVID-19 rates by borough (e.g. count of hospitalizations on the day in the Bronx).
-Of specific interest is the daily case count per borough.
-    \item Since data is aggregated by borough, the population of each borough is accounted for.
-    For this purpose, the United States Census Bureau's yearly county population totals data is used \cite{populations2019, populations2020}.
-    This report specifically relies on the population estimates for the counties of New York State.
-    \item To provide a homogeneous time metric for aggregation, a dataset is generated which defined the MMWR weeks of the data within the selected timeline.
-    The MMWR weeks are generated according to the CDC's defined business rules \cite{mmwr}.
-    \item For geospatial visualizations, 
-    the City of New York's Department of City Planning provides a dataset containing borough outlines \cite{boroughdataset}.
-    This contains the geometry of each borough as well as their names.
-\end{itemize}
-All of these datasets at least provide coverage over Timeline 1, allowing for the generation of meaningful models.
+The subset of this data denoted by the timeline contains $64'913'648$ trips and $19$ features per trip before cleaning.
+Also included from the same source is a mapping dataset for $265$ pick-up/drop-off locations and corresponding boroughs included in the TLC dataset \cite{tlcdataset}.
+
+COVID-19 case rates have been recorded daily by the New York Department of Health and Mental Hygiene \cite{coviddataset}.
+This dataset begins on the last day of February 2020, when the first official cases of COVID-19 were recorded in New York City. 
+Each entry in this data set contains a date and several daily COVID-19 rates by borough (e.g. count of hospitalizations on the day in the Bronx).
+Of specific interest throughout this report is the daily case count per borough.
+This dataset contains $900$ rows and $67$ features per row before cleaning.
+
+Influenza case rates are recorded on a weekly basis by the New York Department of Health \cite{fludataset}. 
+Case rates in this dataset are aggregated by "Morbidity and Mortality Weekly Report" (MMWR) weeks, which are used by the CDC to number the weeks in each year\cite{mmwr}.
+Each entry in this dataset is associated to an MMWR week, county (within the state of New York), type of Influenza (A, B or unspecified), and case count.
+This dataset contains $77910$ rows and $9$ features per row before cleaning.
+
+Since data is aggregated by borough, the population of each borough is accounted for.
+For this purpose, the United States Census Bureau's yearly county population totals data is used \cite{populations2019, populations2020}.
+This report specifically relies on the population estimates for the counties of New York State.
+This data contains $16$ rows and $68$ columns per row (one column per county of New York State).
+
+To provide a homogeneous time metric for aggregation, 
+a dataset is generated that defines the MMWR weeks of the data within the selected timeline on a per borough basis.
+This allows for easier grouping by borough with null values during weeks with no case rates or trips.
+The MMWR weeks are generated according to the CDC's defined business rules \cite{mmwr}.
+This generated MMWR week dataset contains $3675$ rows and $11$ features per row.
+
+All of these datasets provide coverage over the chosen timeline of analysis, 
+allowing for the generation of meaningful models.
+For geospatial visualizations, 
+the City of New York's Department of City Planning provides a dataset containing borough outlines \cite{boroughdataset}.
+This contains the geometry of each borough as well as their names.
+This dataset contains $5$ rows and $5$ features per row.
+
 
 % \LaTeX{} Have many caveats, you should search stack overflow for latex tips whenever you feel something looks bad, for instance:
 % When `` quoting '', should be used instead of ". For example, ``test'' vs "test".
@@ -195,26 +208,63 @@ and describes the models generated for passenger counts and trip distances.
 
 \subsubsection{Preliminary Analysis}
 
-\textbf{Time-Series Analysis:}
 
-% \begin{multicols}{2}
+\begin{multicols}{2}
 
-\begin{wrapfigure}{r}{8cm}
+    \textbf{Time-Series Analysis:}
+    Shown in Figure~\ref{fig:ts} is the change in average trip distance over time. Interestingly, 
+    while most boroughs (pickup or dropoff) experience a slump in average trip distance following the "COVID dip", 
+    Staten Island appears to recover from the effects, and even increase in average trip distance
+    during the COVID-19 pandemic.
+
+This uptick in travel distance is likely caused by reduced usage of the Staten Island ferry and the reduced schedule during the pandemic \cite{dot2020}.
+If this is the case, then Figure~\ref{fig:ts} suggests that people travelling to and from Staten Island rely on taxis to be safer and ontime over the ferry service.
+The trip distances between boroughs are generally not very homoegeneous. 
+A likely reason for this heterogeneity is the difference in commutes to work, since
+many jobs are likely located in Manhattan.
+
+\begin{figure}[H]
+
+    \centering
+
     % change the scale multiplier to make the figures smaller or larger
-    \includegraphics[width=0.55\textwidth]{../plots/time-series-Average Trip Distance-vs-MMWR Weeks (End Dates)-by-pu_borough.png}
+    \includegraphics[width=0.57\textwidth]{../plots/time-series-Average Trip Distance-vs-MMWR Weeks (End Dates)-by-pu_borough.png}
     \caption{How average trip distances per week per pickup borough vary over time.} % refer to this image as (Figure 1)
 
     % \includegraphics[width=0.45\textwidth]{../plots/time-series-Average Trip Distance-vs-MMWR Weeks (End Dates)-by-do_borough.png}
     % this ensures your figures are centered where possible
-    % \centering
     \label{fig:ts}
-\end{wrapfigure}
+\end{figure}
+\end{multicols}
 
-Figure~\ref{fig:ts} shows very clearly the COVID-19 "dip", which appears in nearly every time-series data during the month April 2020.
-Shown in Figure~\ref{fig:ts} is the change in average trip distance over time. Interestingly, 
-while most boroughs (pickup or dropoff) experience a slump in average trip distance following the "COVID dip", 
-Staten Island appears to recover from the effects, and even increase in average trip distance
-during the COVID-19 pandemic.
+The greatest instability in trip distances appears in trips going from Staten Island,
+while travel from other boroughs appears more stable and similar week-on-week. 
+This may also come as a result of Staten Island's separation from the other boroughs
+contributing to many possible factors.
+Something as simple as culture could play a roles in differentiating the travel patterns between boroughs.
+
+\begin{figure}[H]
+
+    \centering
+
+    % change the scale multiplier to make the figures smaller or larger
+    \includegraphics[width=0.49\textwidth]{../plots/time-series-Weekly COVID-19 Cases Per 100k People-vs-MMWR Weeks (End Dates)-by-borough.png}
+    \includegraphics[width=0.49\textwidth]{../plots/time-series-Weekly Influenza Cases Per 100k People-vs-MMWR Weeks (End Dates)-by-borough.png}
+    \caption{How COVID-19 (left) and Influenza (right) case counts per 100k people vary over time.} % refer to this image as (Figure 1)
+
+    % \includegraphics[width=0.45\textwidth]{../plots/time-series-Average Trip Distance-vs-MMWR Weeks (End Dates)-by-do_borough.png}
+    % this ensures your figures are centered where possible
+    \label{fig:ts-measures}
+\end{figure}
+
+Figure~\ref{fig:ts-measures} shows the variation in COVID-19 and Influenza cases per 100'000 people over time.
+One obvious limitation of both datasets is they look very skewed towards the lower values,
+meaning there will be many datapoints with small case rates, and very few points with larger case rates.
+This kind of skew suggests that some points of data will have higher leverage when fitting models than others,
+making the above cleaning and outlier removal processes crucial.
+Both datasets have spikes of case rates, but COVID-19 experiences a significant jump in January 2022.
+
+% \end{multicols}
 
 % \begin{wrapfigure}{r}{8cm}
 %     % change the scale multiplier to make the figures smaller or larger
@@ -227,11 +277,6 @@ during the COVID-19 pandemic.
 %     \label{fig:ts}
 % \end{wrapfigure}
 
-This uptick in travel distance is likely caused by reduced usage of the Staten Island ferry and the reduced schedule during the pandemic \cite{dot2020}.
-If this is the case, then Figure~\ref{fig:ts} suggests that people travelling to and from Staten Island rely on taxis to be safer and ontime over the ferry service.
-The trip distances between boroughs are generally not very homoegeneous. 
-A likely reason for this heterogeneity is the difference in commutes to work, since
-many jobs are likely located in Manhattan.
 
 % \begin{wrapfigure}{r}{5.5cm}
 %     % change the scale multiplier to make the figures smaller or larger
@@ -258,12 +303,8 @@ many jobs are likely located in Manhattan.
 %     % refer to this image as (Figure 1)
 %     \label{map:overall}
 % \end{wrapfigure}
-\begin{multicols}{2}
-The greatest instability in trip distances appears in trips going from Staten Island,
-while travel from other boroughs appears more stable and similar week-on-week. 
-This may also come as a result of Staten Island's separation from the other boroughs
-contributing to many possible factors.
-Something as simple as culture could play a roles in differentiating the travel patterns between boroughs.
+
+
 % \begin{figure}[h]
 %     % change the scale multiplier to make the figures smaller or larger
 %     \includegraphics[width=0.45\textwidth]{../plots/time-series-Average Passengers Per Trip-vs-MMWR Weeks (End Dates)-by-pu_borough.png}
@@ -297,20 +338,6 @@ Figures~\ref{map:overall} and \ref{maps} compares the average trip radius overal
 the average trip radius for the week with maximum COVID-19 cases per capita, 
 and the week with maximum Influenza cases per capita per pickup borough.
 
-\begin{figure}[H]
-
-    % this ensures your figures are centered where possible
-    \centering
-
-    % change the scale multiplier to make the figures smaller or larger
-    \includegraphics[width=0.43\textwidth]{../plots/cropped-map-avg-trip-distance-overall-pu_borough.png}
-
-    \caption{Map of average trip distance overall.} 
-    % refer to this image as (Figure 1)
-    \label{map:overall}
-\end{figure}
-
-\end{multicols}
 
 
 \begin{figure}[H]
@@ -326,12 +353,33 @@ and the week with maximum Influenza cases per capita per pickup borough.
     \label{maps}
 \end{figure}
 
-At a first glance, Staten Island experiences the most drastic change in trip distance following instaces of high case rates.
-This contradicts the findings from Figure~\ref{fig:ts}, where the trip radius for Staten Island increased on average.
-On the other hand, this supports the initial expectation that COVID-19 and Influenza prominence will decrease trust in taxi services over long distances
-In general, it appears as though the travel radii per pick-up borough do not change too drastically following an especially high case rate.
-This may be a reflection of the speed at which case data proliferates among the populations of the boroughs,
-since not every individual will be checking last week's case rates.
+\begin{multicols}{2}
+    \begin{figure}[H]
+
+        % this ensures your figures are centered where possible
+        \centering
+    
+        % change the scale multiplier to make the figures smaller or larger
+        \includegraphics[width=0.5\textwidth]{../plots/cropped-map-avg-trip-distance-overall-pu_borough.png}
+    
+        \caption{Map of average trip distance overall.} 
+        % refer to this image as (Figure 1)
+        \label{map:overall}
+    \end{figure}
+    
+    At a first glance, Staten Island experiences the most drastic change in trip distance following instaces of high case rates.
+    This contradicts the findings from Figure~\ref{fig:ts}, where the trip radius for Staten Island increased on average.
+    On the other hand, this supports the initial expectation that COVID-19 and Influenza prominence will decrease trust in taxi services over long distances
+    In general, it appears as though the travel radii per pick-up borough do not change too drastically following an especially high case rate.
+    This may be a reflection of the speed at which case data proliferates among the populations of the boroughs,
+    since not every individual will be checking last week's case rates.
+
+    The other boroughs do not vary as significantly in trip distance.
+    This may be due to their proximity to each other.
+    Another contributing factor could be the generally larger populations of these boroughs,
+    meaning that a larger proportion of people are unlikely to change their taxi usage based on outside factors.
+
+\end{multicols}
 
 % \begin{figure}[H]
 
@@ -360,13 +408,6 @@ since not every individual will be checking last week's case rates.
 % \end{figure}
 
 % \end{multicols}
-
-
-The other boroughs do not vary as significantly in trip distance.
-This may be due to their proximity to each other.
-Another contributing factor could be the generally larger populations of these boroughs,
-meaning that a larger proportion of people are unlikely to change their taxi usage based on outside factors.
-
 
 
 % \begin{figure}[H]
@@ -400,8 +441,6 @@ meaning that a larger proportion of people are unlikely to change their taxi usa
     % \end{figure}    
 % \end{multicols}
 
-\begin{multicols}{2}
-
 \textbf{Distributions:} 
 It is important to note that the average trip distances
 are random variables with a generally unknown distribution.
@@ -410,26 +449,28 @@ In order to select two models to compare and contrast, the distribution of the d
 and its properties are investigated.
 Trip distances are a continuous metric with a one-sided bound at 0 Miles.
 
-\begin{figure}[H]
-    % change the scale multiplier to make the figures smaller or larger
-    \includegraphics[width=0.45\textwidth]{../plots/histogram-Average Trip Distance-50-bins.png}
-    % this ensures your figures are centered where possible
-    \centering
-    \caption{Probability density histogram of average trip distance.} % refer to this image as (Figure 1)
-    \label{fig:hists}
-\end{figure}
-\end{multicols}
+
+    \begin{figure}[H]
+        % change the scale multiplier to make the figures smaller or larger
+        \includegraphics[width=0.49\textwidth]{../plots/histogram-Average Trip Distance-10-bins.png}
+        \includegraphics[width=0.49\textwidth]{../plots/histogram-Average Trip Distance-50-bins.png}
+        % this ensures your figures are centered where possible
+        \centering
+        \caption{Probability density histograms of average trip distance with 10 bins (left) and 50 bins (right).} % refer to this image as (Figure 1)
+        \label{fig:hists}
+    \end{figure}
 
 The weekly average trip distances have an overall average of $10.04$ miles, with a variance of $58.75$.
 Such a wide variance (where the bound of $0$ Miles is only within $2$ standard deviations of the mean) 
 suggests that trip distances have a somewhat widely distribution.
-According to Figure~\ref{fig:hists}, there appear to be multiple not-so-distinct peaks in trip distance. 
+According to Figure~\ref{fig:hists}, there appear to be multiple peaks in trip distance. 
+With fewer bins, there are two discernible peaks, each very approximately normally distributed.
+With more bins, the peaks are not as easy to discern, nor determine their distributions.
 Earlier evidence of positively skewed distribution occurs in Figure~\ref{fig:ts}, 
 where there are several bands of average trip distance when grouped by borough.
-
 An argument can be made that Figure~\ref{fig:hists} shows several normally distributed peaks of trip distances.
 However, another argument can be made that due to the trip distance being proportional to a measure of duration
-with a lower limit at $0$, it can also be approximately distributed with a Gamma distribution.
+with a lower limit at $0$, it can also be approximated with a gamma distribution.
 
 \subsubsection{Modelling}
 
@@ -479,26 +520,27 @@ Instead, the model is analyzed using ANOVA testing and a comparison of fitted an
     Unfortunately this is a strong indicator that the data does not follow a linear relationship.
     This suggests the need for further investigation into the type of relationship which is present.
     The Gaussian model yields an adjusted $R^2$ of $0.972$, which is generally quite high.
+    A measure to consider for comparison to the next is the log-likelihood of the linear regression,
+    which is $-865.8$.
 
-    \pagebreak
 \textbf{Gamma Regression:}
-Continuous data with bounds that measures duration can often be accurately modelled using a generalized linear model in the Gamma family.
+Continuous data with bounds that measures duration can often be accurately modelled using a generalized linear model in the gamma family.
 Since distance is approximately proportional (if not simply a multiple of) the time duration of each taxi trip,
-it may be the case that a Gamma regression is more applicable.
+it may be the case that a gamma regression with the default inverse link is more applicable.
 Again, the specific parameters for the model are not mentioned since they are difficult to interpret.
 Instead, the relevance of the model can be determined through deviance and the Cox and Snell pseudo $R^2$.
 For this data, the model yields a deviance of $4.185$ and a pseudo $R^2$ of $1.000$.
 The deviance is very low, which suggests little variance in the model results.
-The pseudo $R^2$ appears to be perfect, which might indicate that this model is overfitting the data.
-
+The pseudo $R^2$ is perfect, which indicates that this model is probably overfitting the data.
+This model yields a log-likelihood of $-542.2$.
 
 \textbf{Comparing Models:}
 
-According to Figure~\ref{fig:diag}, both the Gaussian and Gamma regressions perform well with the given dataset.
+According to Figure~\ref{fig:diag}, both the Gaussian and gamma regressions perform well with the given dataset.
 While the models are similarly accurate with lower values of trip distance, 
 at higher fitted values of trip distance, the ordinary least squares model tends towards a certain trip distance where there is actually a lot of variation.
-The Gamma model appears to fit results with more homoskedasticity in the data.
-This suggests that average trip distances are better modelled using a Gamma distribution.
+The gamma model appears to fit results with more homoskedasticity in the data.
+This suggests that average trip distances are better modelled using a gamma distribution.
 
     \begin{figure}[H]
         % change the scale multiplier to make the figures smaller or larger
@@ -506,9 +548,14 @@ This suggests that average trip distances are better modelled using a Gamma dist
         \includegraphics[width=0.49\textwidth]{../plots/diagnostic-glm-Observed Average Weekly Trip Distance (Miles)-vs-Fitted Average Weekly Trip Distance (Miles).png}
         % this ensures your figures are centered where possible
         \centering
-        \caption{How observed and fitted values compare for the trip distance Gaussian Linear Regression (left) and Gamma Regression (right).} % refer to this image as (Figure 1)
+        \caption{How observed and fitted values compare for the trip distance Gaussian Linear Regression (left) and gamma Regression (right).} % refer to this image as (Figure 1)
         \label{fig:diag}
     \end{figure}
+
+The models can very easily be compared on their log-likelihoods, since they're both used on the same predictor.
+The gamma regression has a log-likelihood of $-542.2$, whereas the Gaussian (OLS) regression has a log-likelihood of $-865.8$.
+Since the gamma regression has a higher log-likelihood, the probability of its parameters being more correct
+is higher. This suggests that the trip distance data is indeed better represented with a gamma regression model.
 
 % \end{multicols}
 
@@ -592,41 +639,34 @@ This suggests that average trip distances are better modelled using a Gamma dist
 
 \section{Conclusions}
 
-This report provides a brief investigation into possible relationships between
-incidences of viral infection within a certain borough, 
-and the distances for taxi trips starting in that borough.
-
-According to the linear models generated, the case rates of COVID-19 
-are most relevant in predicting the following week's average trip distances.
-While the model for passenger counts appears to fit better than for trip distances,
-this may be due to overfitting present in the underlying data.
-On the trip distance model, using a linear regression may not result in the best
-fit due to the presence of multimodal data.
-
+In conclusion, there is merit to the thinking that increased case rates of viruses 
+have an effect on the reliance on taxis at different distances.
+According to the linear models generated, 
+both COVID-19 and Influenza have a small, but relevant relationship with the average taxi trip's distance.
+These relationships can be shown either with an ordinary least squares linear regression,
+or with a gamma regresion, with the latter yielding a higher $R^2$.
+However, there is the risk that the latter is overfitting the data,
+which may be the case due to the relatively small ($< 1000$ points) sample size.
 It is important to note that no causal relationships were proven or investigated in this report,
-and thus the generated models cannot be relied on as anything more than reflections
-of underlying correlations. In the same vein, while the models can be used to predict future reliance measures of yellow taxis,
-they should by no means be the only models relied upon, and should be used in conjunction several others.
+and thus the generated models cannot be relied on as anything more than indicators
+of underlying correlations. In the same vein, 
+while the models can be used to predict future reliance measures of yellow taxis,
+they should by no means be the sole models used. 
+Instead they are best suited for use in conjunction with several others.
 
-To conclude, there appears to be a correlation between the case rates of COVID-19
-and the distances and passenger counts of taxi trips in the following week.
-Such a relationship is less strong with Influenza case rates. Therefore,
-it cannot be concluded decisively if there is a common effect that increased disease 
-in a persons vicinity will alter how they use common forms of transport.
 
-\section{Recommendations}
-This has been a thorough, but brief look into correlations between viruses and reliance metrics.
-The following are several paths on which further research in this area could begin:
-\begin{itemize}
-    \item It should be considered that there are sevaral datasets which could be included
-    in a similar analysis, such as considering other viruses, or considering other forms of transport.
-    With more data to analyze, a clearer picture of the true relationships between infectious disease and preceived need for transport services.
-    \item As mentioned in the paper, aggregation of TLC data performs grouping by pickup location.
-    This means the same analysis should also be performed on aggregation by dropoff location instead.
-    It would be interesting to compare and contrast the resulting models generated with this different grouping.
-    \item Another way in which the research could be deepened would be to select a subset of specific locations where trips going to/from are likely work-related. 
-    This would provide a window into measuring the shift to working from home caused by viruses.
-\end{itemize}
+
+\section{Further Research}
+There are several paths for further research based on this report.
+First, consider other datasets which merit inclusion
+in this analysis, such as other virus case rates, or other forms of transport.
+With more data to analyze, a clearer picture of the true relationships between infectious disease and preceived need for transport services.
+As mentioned in the paper, the TLC data is aggregated by pickup location.
+    The same analysis should also be performed on aggregation by dropoff location.
+    There may be value in comparing and contrasting the resulting models with this different grouping.
+Finally, specifically select a subset of specific locations where trips going to/from are likely work-related. 
+This would provide a window into measuring the shift to working from home caused by viruses.
+
 
 \clearpage
 
