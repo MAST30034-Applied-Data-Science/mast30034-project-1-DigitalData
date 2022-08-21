@@ -87,7 +87,7 @@ Of specific interest throughout this report is the daily case count per borough.
 This dataset contains $900$ rows and $67$ features per row before cleaning.
 
 Influenza case rates are recorded on a weekly basis by the New York Department of Health \cite{fludataset}. 
-Case rates in this dataset are aggregated by "Morbidity and Mortality Weekly Report" (MMWR) weeks, which are used by the CDC to number the weeks in each year\cite{mmwr}.
+Case rates in this dataset are aggregated by ``Morbidity and Mortality Weekly Report'' (MMWR) weeks, which are used by the United States Center for Diseas Control and Prevention (CDC) to number the weeks in each year\cite{mmwr}.
 Each entry in this dataset is associated to an MMWR week, county (within the state of New York), type of Influenza (A, B or unspecified), and case count.
 This dataset contains $77910$ rows and $9$ features per row before cleaning.
 
@@ -208,61 +208,76 @@ and describes the models generated for passenger counts and trip distances.
 
 \subsubsection{Preliminary Analysis}
 
+\textbf{Time-Series Analysis:}
+Shown in Figure~\ref{fig:ts} is the change in average trip distance over time. Interestingly, 
+while most boroughs (pick-up or drop-off) experience a slump in average trip distance following the "COVID dip", 
+Staten Island appears to recover from the effects, and even increase in average trip distance
+during the COVID-19 pandemic.
+
+% This uptick in travel distance is likely caused by reduced usage of the Staten Island ferry and the reduced schedule during the pandemic \cite{dot2020}.
+% If this is the case, then Figure~\ref{fig:ts} suggests that people travelling to and from Staten Island rely on taxis to be safer and ontime over the ferry service.
+% The trip distances between boroughs are generally not very homoegeneous. 
+% A likely reason for this heterogeneity is the difference in commutes to work, since
+% many jobs are likely located in Manhattan.
 
 \begin{multicols}{2}
+    This uptick in travel distance is likely caused by reduced usage of the Staten Island ferry and the reduced schedule during the pandemic \cite{dot2020}.
+    If this is the case, then Figure~\ref{fig:ts} suggests that people travelling to and from Staten Island rely on taxis to be safer and ontime over the ferry service.
+    The trip distances between boroughs are generally not very homoegeneous. 
+    A likely reason for this heterogeneity is the difference in commutes to work, since
+    many jobs are likely located in Manhattan.
+    The greatest instability in trip distances appears in trips going from Staten Island,
+    while travel from other boroughs appears more stable and similar week-on-week. 
+    % \begin{figure}[H]
 
-    \textbf{Time-Series Analysis:}
-    Shown in Figure~\ref{fig:ts} is the change in average trip distance over time. Interestingly, 
-    while most boroughs (pick-up or drop-off) experience a slump in average trip distance following the "COVID dip", 
-    Staten Island appears to recover from the effects, and even increase in average trip distance
-    during the COVID-19 pandemic.
+    %     \centering
+    
+    %     % change the scale multiplier to make the figures smaller or larger
+    %     \includegraphics[width=0.54\textwidth]{../plots/time-series-Average Trip Distance-vs-MMWR Weeks (End Dates)-by-pu_borough.png}
+    %     \caption{How average trip distances per week per pick-up borough vary over time.} % refer to this image as (Figure 1)
+    
+    %     % \includegraphics[width=0.45\textwidth]{../plots/time-series-Average Trip Distance-vs-MMWR Weeks (End Dates)-by-do_borough.png}
+    %     % this ensures your figures are centered where possible
+    %     \label{fig:ts}
+    % \end{figure}
+% \end{multicols}
 
-This uptick in travel distance is likely caused by reduced usage of the Staten Island ferry and the reduced schedule during the pandemic \cite{dot2020}.
-If this is the case, then Figure~\ref{fig:ts} suggests that people travelling to and from Staten Island rely on taxis to be safer and ontime over the ferry service.
-The trip distances between boroughs are generally not very homoegeneous. 
-A likely reason for this heterogeneity is the difference in commutes to work, since
-many jobs are likely located in Manhattan.
+% % This uptick in travel distance is likely caused by reduced usage of the Staten Island ferry and the reduced schedule during the pandemic \cite{dot2020}.
+% % If this is the case, then Figure~\ref{fig:ts} suggests that people travelling to and from Staten Island rely on taxis to be safer and ontime over the ferry service.
+% % The trip distances between boroughs are generally not very homoegeneous. 
+% % A likely reason for this heterogeneity is the difference in commutes to work, since
+% % many jobs are likely located in Manhattan.
 
-\begin{figure}[H]
+% \begin{multicols}{2}
 
-    \centering
+    This may also come as a result of Staten Island's separation from the other boroughs
+    contributing to many possible factors.
+    Something as simple as culture could play a roles in differentiating the travel patterns between boroughs.
 
-    % change the scale multiplier to make the figures smaller or larger
-    \includegraphics[width=0.57\textwidth]{../plots/time-series-Average Trip Distance-vs-MMWR Weeks (End Dates)-by-pu_borough.png}
-    \caption{How average trip distances per week per pick-up borough vary over time.} % refer to this image as (Figure 1)
+    Figure~\ref{fig:ts} shows the variation in COVID-19 and Influenza cases per 100'000 people over time.
+    One obvious limitation of both datasets is they look very skewed towards the lower values,
+    meaning there will be many datapoints with small case rates, and very few points with larger case rates.
+    This kind of skew suggests that some points of data will have higher leverage when fitting models than others,
+    making the above cleaning and outlier removal processes crucial.
+    Both datasets have spikes of case rates, but COVID-19 experiences a significant jump in January 2022.
+    
+    \begin{figure}[H]
 
-    % \includegraphics[width=0.45\textwidth]{../plots/time-series-Average Trip Distance-vs-MMWR Weeks (End Dates)-by-do_borough.png}
-    % this ensures your figures are centered where possible
-    \label{fig:ts}
-\end{figure}
+        \centering
+
+        % change the scale multiplier to make the figures smaller or larger
+        \includegraphics[width=0.58\textwidth]{../plots/time-series-Average Trip Distance-vs-MMWR Weeks (End Dates)-by-pu_borough.png}
+        \includegraphics[width=0.58\textwidth]{../plots/time-series-Weekly COVID-19 Cases Per 100k People-vs-MMWR Weeks (End Dates)-by-borough.png}
+        \includegraphics[width=0.58\textwidth]{../plots/time-series-Weekly Influenza Cases Per 100k People-vs-MMWR Weeks (End Dates)-by-borough.png}
+        \caption{How Average Trip Distances (top), COVID-19 (middle) and Influenza (bottom) case counts per 100k people vary over time.} % refer to this image as (Figure 1)
+
+        % \includegraphics[width=0.45\textwidth]{../plots/time-series-Average Trip Distance-vs-MMWR Weeks (End Dates)-by-do_borough.png}
+        % this ensures your figures are centered where possible
+        \label{fig:ts}
+    \end{figure}
+
 \end{multicols}
-
-The greatest instability in trip distances appears in trips going from Staten Island,
-while travel from other boroughs appears more stable and similar week-on-week. 
-This may also come as a result of Staten Island's separation from the other boroughs
-contributing to many possible factors.
-Something as simple as culture could play a roles in differentiating the travel patterns between boroughs.
-
-\begin{figure}[H]
-
-    \centering
-
-    % change the scale multiplier to make the figures smaller or larger
-    \includegraphics[width=0.49\textwidth]{../plots/time-series-Weekly COVID-19 Cases Per 100k People-vs-MMWR Weeks (End Dates)-by-borough.png}
-    \includegraphics[width=0.49\textwidth]{../plots/time-series-Weekly Influenza Cases Per 100k People-vs-MMWR Weeks (End Dates)-by-borough.png}
-    \caption{How COVID-19 (left) and Influenza (right) case counts per 100k people vary over time.} % refer to this image as (Figure 1)
-
-    % \includegraphics[width=0.45\textwidth]{../plots/time-series-Average Trip Distance-vs-MMWR Weeks (End Dates)-by-do_borough.png}
-    % this ensures your figures are centered where possible
-    \label{fig:ts-measures}
-\end{figure}
-
-Figure~\ref{fig:ts-measures} shows the variation in COVID-19 and Influenza cases per 100'000 people over time.
-One obvious limitation of both datasets is they look very skewed towards the lower values,
-meaning there will be many datapoints with small case rates, and very few points with larger case rates.
-This kind of skew suggests that some points of data will have higher leverage when fitting models than others,
-making the above cleaning and outlier removal processes crucial.
-Both datasets have spikes of case rates, but COVID-19 experiences a significant jump in January 2022.
+    
 
 % \end{multicols}
 
@@ -441,7 +456,8 @@ and the week with maximum Influenza cases per capita per pick-up borough.
     % \end{figure}    
 % \end{multicols}
 
-\textbf{Distributions:} 
+\begin{multicols}{2}
+    \textbf{Distributions:} 
 It is important to note that the average trip distances
 are random variables with a generally unknown distribution.
 This means that multiple model candidates may be considered.
@@ -449,28 +465,58 @@ In order to select two models to compare and contrast, the distribution of the d
 and its properties are investigated.
 Trip distances are a continuous metric with a one-sided bound at 0 Miles.
 
-
-    \begin{figure}[H]
-        % change the scale multiplier to make the figures smaller or larger
-        \includegraphics[width=0.49\textwidth]{../plots/histogram-Average Trip Distance-10-bins.png}
-        \includegraphics[width=0.49\textwidth]{../plots/histogram-Average Trip Distance-50-bins.png}
-        % this ensures your figures are centered where possible
-        \centering
-        \caption{Probability density histograms of average trip distance with 10 bins (left) and 50 bins (right).} % refer to this image as (Figure 1)
-        \label{fig:hists}
-    \end{figure}
-
 The weekly average trip distances have an overall average of $10.04$ miles, with a variance of $58.75$.
-Such a wide variance (where the bound of $0$ Miles is only within $2$ standard deviations of the mean) 
-suggests that trip distances have a somewhat widely distribution.
+Such a wide variance (where the lower bound of $0$ Miles is only within $2$ standard deviations of the mean) 
+suggests that models for trip distances may be more prone to variability with irrelevant predictors.
 According to Figure~\ref{fig:hists}, there appear to be multiple peaks in trip distance. 
-With fewer bins, there are two discernible peaks, each very approximately normally distributed.
+With fewer bins, there are two discernible peaks, each roughly normally distributed.
 With more bins, the peaks are not as easy to discern, nor determine their distributions.
 Earlier evidence of positively skewed distribution occurs in Figure~\ref{fig:ts}, 
 where there are several bands of average trip distance when grouped by borough.
 An argument can be made that Figure~\ref{fig:hists} shows several normally distributed peaks of trip distances.
 However, another argument can be made that due to the trip distance being proportional to a measure of duration
 with a lower limit at $0$, it can also be approximated with a gamma distribution.
+
+    \begin{figure}[H]
+        \centering
+        % change the scale multiplier to make the figures smaller or larger
+        \includegraphics[width=0.5\textwidth]{../plots/histogram-Average Trip Distance-10-bins.png}
+        \includegraphics[width=0.5\textwidth]{../plots/histogram-Average Trip Distance-50-bins.png}
+        % this ensures your figures are centered where possible
+        \caption{Probability density histograms of average trip distance with 10 bins (top) and 50 bins (bottom).} % refer to this image as (Figure 1)
+        \label{fig:hists}
+    \end{figure}
+\end{multicols}
+% \textbf{Distributions:} 
+% It is important to note that the average trip distances
+% are random variables with a generally unknown distribution.
+% This means that multiple model candidates may be considered.
+% In order to select two models to compare and contrast, the distribution of the data
+% and its properties are investigated.
+% Trip distances are a continuous metric with a one-sided bound at 0 Miles.
+
+
+%     \begin{figure}[H]
+%         \centering
+%         % change the scale multiplier to make the figures smaller or larger
+%         \includegraphics[width=0.5\textwidth]{../plots/histogram-Average Trip Distance-10-bins.png}
+%         \includegraphics[width=0.5\textwidth]{../plots/histogram-Average Trip Distance-50-bins.png}
+%         % this ensures your figures are centered where possible
+%         \caption{Probability density histograms of average trip distance with 10 bins (left) and 50 bins (right).} % refer to this image as (Figure 1)
+%         \label{fig:hists}
+%     \end{figure}
+
+% The weekly average trip distances have an overall average of $10.04$ miles, with a variance of $58.75$.
+% Such a wide variance (where the lower bound of $0$ Miles is only within $2$ standard deviations of the mean) 
+% suggests that models for trip distances may be more prone to variability with irrelevant predictors.
+% According to Figure~\ref{fig:hists}, there appear to be multiple peaks in trip distance. 
+% With fewer bins, there are two discernible peaks, each roughly normally distributed.
+% With more bins, the peaks are not as easy to discern, nor determine their distributions.
+% Earlier evidence of positively skewed distribution occurs in Figure~\ref{fig:ts}, 
+% where there are several bands of average trip distance when grouped by borough.
+% An argument can be made that Figure~\ref{fig:hists} shows several normally distributed peaks of trip distances.
+% However, another argument can be made that due to the trip distance being proportional to a measure of duration
+% with a lower limit at $0$, it can also be approximated with a gamma distribution.
 
 \subsubsection{Modelling}
 
@@ -485,12 +531,16 @@ the preceding week's COVID-19 case rate per 100 thousand,
 and
 the preceding week's Influenza case rate per 100 thousand,
 along with interaction between the borough (a non-ordinal categorical)
-and each of the viral case rates is also considered.
+and each of the viral case rates.
 
-\textbf{Ordinary Least Squares Gaussian Linear Model:}
+\textbf{Gaussian Linear Model:}
 The weekly average trip distance is first modelled using an ordinary least squares (OLS) or Gaussian linear regression,
 due to the potential presence of normal distributions per borough.
-The specific OLS parameter values are not relevant, since this is a less than full rank linear model 
+The generated model displays a negative relationship 
+between the viral case rates and trip distances,
+due to the parameters being negative ($\beta_{\text{COVID-19}_1} \approx -3 \times 10^{-4}$, and $\beta_{\text{Influenza}_1} \approx -4 \times 10^{-3}$). 
+This confirms the theory that increased case rates disincentivise the use of taxis over longer distances.
+Other specific OLS parameter values are not mentioned, since this is a less than full rank linear model 
 (where there are infinitely many parameter solutions due to the inclusion of a categorical variable).
 Instead, the model is analyzed using ANOVA testing and a comparison of fitted and observed data.
 
@@ -523,11 +573,15 @@ Instead, the model is analyzed using ANOVA testing and a comparison of fitted an
     A measure to consider for comparison to the next is the log-likelihood of the linear regression,
     which is $-865.9$.
 
+
 \textbf{Gamma Regression:}
 Continuous data with bounds that measures duration can often be accurately modelled using a generalized linear model in the gamma family.
 Since distance is approximately proportional (if not simply a multiple of) the time duration of each taxi trip,
 it may be the case that a gamma regression with the default inverse link is more applicable.
-Again, the specific parameters for the model are not mentioned since they are difficult to interpret.
+The parameters from this model also supports the theory that trip distance decreases with increased case rates
+($\beta_{\text{COVID-19}_2} \approx 6 \times 10^{-6}$, and $\beta_{\text{Influenza}_2} \approx 2 \times 10^{-4}$).
+Due to the use of the inverse link function, positive parameter values have an inverse effect on the response.
+Again, other specific parameters for the model are not mentioned.
 Instead, the relevance of the model can be determined through deviance and the Cox and Snell pseudo $R^2$.
 For this data, the model yields a deviance of $4.185$ and a pseudo $R^2$ of $1.000$.
 The deviance is very low, which suggests little variance in the model results.
